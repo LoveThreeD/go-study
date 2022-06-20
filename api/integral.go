@@ -37,5 +37,5 @@ func GetRankingLimit50(c *gin.Context) {
 	m["top50"] = data
 	m["selfData"] = selfData
 
-	c.JSON(200, gin.H{"code": 400, "msg": m})
+	c.JSON(200, gin.H{"code": 200, "msg": m})
 }

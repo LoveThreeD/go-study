@@ -32,7 +32,7 @@ func EnterLevel(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"code": 400, "msg": gameData})
+	c.JSON(200, gin.H{"code": 200, "msg": gameData})
 }
 
 func MissionAccomplished(c *gin.Context) {
@@ -57,7 +57,7 @@ func MissionAccomplished(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"code": 400, "msg": true})
+	c.JSON(200, gin.H{"code": 200, "msg": true})
 }
 
 func Leave(c *gin.Context) {
@@ -82,5 +82,5 @@ func Leave(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"code": 400, "msg": true})
+	c.JSON(200, gin.H{"code": 200, "msg": true})
 }

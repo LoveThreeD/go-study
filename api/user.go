@@ -27,7 +27,7 @@ func GetUserByUserID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"code": 400, "msg": entity})
+	c.JSON(200, gin.H{"code": 200, "msg": entity})
 }
 
 // UserInit 当登陆成功，进入“我的家园”，提示玩家给自己设置昵称，并选择性别
@@ -46,5 +46,5 @@ func UserInit(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 400, "msg": err})
 		return
 	}
-	c.JSON(200, gin.H{"code": 400, "msg": data})
+	c.JSON(200, gin.H{"code": 200, "msg": data})
 }
