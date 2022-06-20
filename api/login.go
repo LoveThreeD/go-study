@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"sTest/entity"
@@ -13,7 +14,11 @@ import (
 func Login(c *gin.Context) {
 	// get query params
 	account := entity.AccountData{}
-	c.Bind(&account)
+	if err := c.Bind(&account); err != nil {
+		logger.Error(err)
+		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
+		return
+	}
 
 	// get flag
 	ok, err := service.Login(&account)
@@ -68,8 +73,14 @@ func LogOut(c *gin.Context) {
 func Register(c *gin.Context) {
 	// get query params
 	equipmentID := c.PostForm("equipmentId")
+	if equipmentID == "" {
+		err := errors.New("接收参数不正确,空参数")
+		logger.Error(err)
+		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
+		return
+	}
 
-	//
+	// init t_account_data and t_base_data
 	accountData, err := service.Register(equipmentID)
 	if err != nil {
 		logger.Error(err)

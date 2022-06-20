@@ -1,23 +1,13 @@
-# STest Service
+# 消消闯关卡
 
-This is the STest service
+## 1.用户的user_id存在redis中方便生成账号.          
 
-Generated with
+1.先增加，再查询，后更新账号（3条Mysql请求）
 
-```
-micro new sTest
-```
+## 2.配置文件的读取，实时更新 
 
-## Usage
+1.三个任务已经完成到第二个。这时配置文件中删除掉,需要删除配置的同时更新Mysql的数据（关卡积分，任务积分呢？是否需要减去.）
 
-Generate the proto code
+3.正在执行任务,然后删除了该任务.完成任务时会异常
 
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+## 3. 注册时----从redis中设置数据,有并发问题.
