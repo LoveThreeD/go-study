@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/golang/protobuf/proto"
-	"sTest/conf"
 	"sTest/entity"
-	m "sTest/mysql"
+	m "sTest/pkg/mysql"
+	"sTest/pkg/viper"
 	pb "sTest/proto"
 )
 
@@ -28,7 +28,7 @@ func EnterLevel(levelID int, userID int) (gameData *pb.GameData, err error) {
 	// 配置表查验关卡信息
 	// IO操作应该使用结构体接收一次，而不是多次
 	// 大于则提示敬请期待             2-> 第一关没通关
-	levelLen := len(conf.GameConfig.LevelConfig.Level)
+	levelLen := len(viper.LevelConf.Level)
 	if uint32(levelID) > gameData.LevelData.CurLevel {
 		err = errors.New("先通过前面的关卡,才能继续挑战")
 		logger.Error(err)
@@ -45,8 +45,8 @@ func EnterLevel(levelID int, userID int) (gameData *pb.GameData, err error) {
 func MissionAccomplished(userID, taskID int) (err error) {
 	// 判断任务是否在配置表中
 	var ok bool
-	for _, val := range conf.GameConfig.TaskConfig.Task {
-		if val.ID == taskID {
+	for _, val := range viper.TaskConf.Task {
+		if val.Id == taskID {
 			ok = true
 		}
 	}
@@ -63,7 +63,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 		return err
 	}
 	// 判断是否超出
-	if int(gameData.LevelData.CurLevel) > len(conf.GameConfig.LevelConfig.Level) {
+	if int(gameData.LevelData.CurLevel) > len(viper.LevelConf.Level) {
 		err = errors.New("敬请期待")
 		logger.Error(err)
 		return err
@@ -71,7 +71,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 
 	// 判断任务列表
 	ok = false
-	for _, val := range conf.GameConfig.LevelConfig.Level[int(gameData.LevelData.CurLevel)-1].TaskList {
+	for _, val := range viper.LevelConf.Level[int(gameData.LevelData.CurLevel)-1].TaskList {
 		if val == taskID {
 			ok = true
 		}
@@ -120,8 +120,8 @@ func MissionAccomplished(userID, taskID int) (err error) {
 	}
 
 	var integral int
-	for _, val := range conf.GameConfig.TaskConfig.Task {
-		if val.ID == taskID {
+	for _, val := range viper.TaskConf.Task {
+		if val.Id == taskID {
 			integral = val.RewardScore
 		}
 	}
@@ -144,7 +144,7 @@ func Leave(userID, levelID int) (err error) {
 
 	// 判断任务是否全部完成
 	finishTask := gameData.LevelData.FinishTask
-	levels := conf.GameConfig.LevelConfig.Level
+	levels := viper.LevelConf.Level
 	if len(levels) < levelID || levelID < 1 || gameData.LevelData.CurLevel != uint32(levelID) {
 		err = errors.New("关卡不正确")
 		logger.Error(err)
@@ -153,7 +153,7 @@ func Leave(userID, levelID int) (err error) {
 
 	var levelTaskTotal int
 	var completed int
-	for _, val := range conf.GameConfig.LevelConfig.Level[levelID-1].TaskList {
+	for _, val := range viper.LevelConf.Level[levelID-1].TaskList {
 		levelTaskTotal += val
 	}
 	for _, val := range finishTask {
@@ -195,8 +195,8 @@ func Leave(userID, levelID int) (err error) {
 	}
 
 	var integral int
-	for _, val := range conf.GameConfig.LevelConfig.Level {
-		if val.ID == levelID {
+	for _, val := range viper.LevelConf.Level {
+		if val.Id == levelID {
 			integral = val.FinishReward
 		}
 	}

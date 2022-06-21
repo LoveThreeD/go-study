@@ -6,8 +6,8 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/garyburd/redigo/redis"
 	"sTest/entity"
-	m "sTest/mysql"
-	r "sTest/redis"
+	m "sTest/pkg/mysql"
+	r "sTest/pkg/redis"
 	"strconv"
 	"strings"
 )

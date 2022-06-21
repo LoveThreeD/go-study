@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/asim/go-micro/v3/logger"
 	"sTest/entity"
-	m "sTest/mysql"
+	m "sTest/pkg/mysql"
 )
 
 func GetUserByID(userID int) (e *entity.BaseData, err error) {

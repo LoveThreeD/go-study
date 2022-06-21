@@ -1,0 +1,12 @@
+[Mysql]
+Address = "192.168.20.132"
+Port = 3306
+Username = "root"
+Password = "123456"
+DbName = "test"
+Url = "charset=utf8mb4&parseTime=True"
+
+[Redis]
+Address = "192.168.20.132"
+Type = "tcp"
+Port = 6379

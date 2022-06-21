@@ -2,6 +2,8 @@ package mysql
 
 import (
 	"fmt"
+	"sTest/pkg/viper"
+
 	// mysql必须导入
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -10,8 +12,10 @@ import (
 
 var DB *sqlx.DB
 
-func InitDB() {
-	dsn := "root:123456@tcp(192.168.20.132:3306)/test?charset=utf8mb4&parseTime=True"
+func init() {
+	//dsn := "root:123456@tcp(192.168.20.132:3306)/test?charset=utf8mb4&parseTime=True"
+	c := viper.Conf.Mysql
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s", c.Username, c.Password, c.Address, c.Port, c.DbName, c.URL)
 	// 也可以使用MustConnect连接不成功就panic
 	var err error
 	DB, err = sqlx.Connect("mysql", dsn)

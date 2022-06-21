@@ -5,8 +5,8 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/garyburd/redigo/redis"
 	"sTest/entity"
-	m "sTest/mysql"
-	r "sTest/redis"
+	m "sTest/pkg/mysql"
+	r "sTest/pkg/redis"
 	"sTest/util"
 	"strconv"
 	"time"
@@ -54,19 +54,14 @@ func Register(equipmentID string) (v *entity.AccountData, err error) {
 	// get userId
 	// TODO(已完成) 1。缓存事务  2.缓存成功mysql失败问题  [[存在redis完成，但mysql异常退出情况   影响是user_id增加1]]
 	rConn := r.Pool.Get()
-
-	val, err := redis.Int(rConn.Do("get", "userId"))
-	if err != nil {
-		logger.Error(err)
-		return nil, err
-	}
-
 	if _, err := rConn.Do("MULTI"); err != nil {
 		logger.Error(err)
 		return nil, err
 	}
-	userID := val + 1
-	if _, err = rConn.Do("set", "userId", userID); err != nil {
+
+	userID, err := redis.Int(rConn.Do("incr", "userId", 1))
+
+	if _, err = rConn.Do("incr", "userId", userID); err != nil {
 		logger.Error(err)
 		return nil, err
 	}

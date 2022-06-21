@@ -7,22 +7,12 @@ import (
 	"github.com/asim/go-micro/v3/registry"
 	"github.com/asim/go-micro/v3/server"
 	"github.com/gin-gonic/gin"
-	"sTest/conf"
-	"sTest/mysql"
-	"sTest/redis"
-
 	r "sTest/router"
 )
 
 var (
 	ServerName = "sTest"
 )
-
-func init() {
-	conf.InitConfig()
-	mysql.InitDB()
-	redis.InitRedis()
-}
 
 func main() {
 	// create service
