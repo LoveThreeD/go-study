@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/asim/go-micro/v3/logger"
 	"sTest/entity"
+	"sTest/pkg/auth"
 	m "sTest/pkg/mysql"
 	"sTest/repository/cache"
 	"sTest/util"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func Login(account *entity.AccountData) (ok bool, err error) {
+func Login(account *entity.AccountData) (token string, err error) {
 	// select mysql by account
 	sqlStr := "select user_id from t_account_data where account = ? and passwd = ?"
 
@@ -19,22 +20,28 @@ func Login(account *entity.AccountData) (ok bool, err error) {
 	if err = m.DB.Get(&userID, sqlStr, account.Account, account.Passwd); err != nil {
 		logger.Error(err)
 		err = errors.New("账号或密码错误，请输入正确的账号和密码")
-		return false, err
+		return "", err
 	}
 
 	updateUserStatusSQL := "update t_base_data set is_online = 1 where user_id = ?"
 	if _, err := m.DB.Exec(updateUserStatusSQL, userID); err != nil {
 		logger.Error(err)
-		return false, err
+		return "", err
 	}
 
 	//检查缓存
 	if _, err := cache.GetUserCache(int(userID)); err != nil {
 		logger.Error(err)
-		return false, err
+		return "", err
 	}
 
-	return true, nil
+	// 生成token
+	token, err = auth.GenerateToken(int(userID))
+	if err != nil {
+		logger.Error(err)
+		return "", err
+	}
+	return
 }
 
 func LoginOut(userId int64) (err error) {

@@ -22,17 +22,13 @@ func Login(c *gin.Context) {
 		return
 	}
 	// get flag
-	ok, err := service.Login(&account)
+	token, err := service.Login(&account)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
 		return
 	}
-	if !ok {
-		response.ResFailed(c)
-		return
-	}
-	c.JSON(200, gin.H{"code": 200, "msg": "Login Success"})
+	response.ResSuccessWithData(c, response.OK.WithData(token))
 }
 
 func LogOut(c *gin.Context) {

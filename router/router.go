@@ -3,12 +3,17 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"sTest/api"
+	"sTest/middleware"
 )
 
 func InitRouter(router *gin.Engine) {
 	router.POST("/login", api.Login)
 	router.POST("/register", api.Register)
 	router.POST("/logout", api.LogOut)
+
+	router.Use(middleware.UserAuthMiddleware(
+		middleware.AllowPathPrefixSkipper("/login", "/register"),
+	))
 
 	user := router.Group("/user")
 	{
