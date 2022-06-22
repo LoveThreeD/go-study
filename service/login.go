@@ -44,8 +44,6 @@ func LoginOut(userID int64) (ok bool, err error) {
 	return userID > 0, nil
 }
 
-// TODO(已完成): 注册问题,[[只有不同的设备码才可以注册,相同设备码不能注册]]
-
 func Register(equipmentID string) (v *entity.AccountData, err error) {
 	// get random char
 	twoChar := util.RandNCharAccount(2)

@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-// TODO(待考虑) 返回数据中的排名是否可以不必返回,因为数组有序    (同样积分的会出现什么情况)
+// XXX(待考虑) 返回数据中的排名是否可以不必返回,因为数组有序    (同样积分的会出现什么情况)
 
 func GetRankingLimit50(c *gin.Context) {
 	// userID 任务ID
