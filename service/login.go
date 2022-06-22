@@ -33,15 +33,26 @@ func Login(account *entity.AccountData) (ok bool, err error) {
 	return userID > 0, nil
 }
 
-func LoginOut(userID int64) (ok bool, err error) {
+func LoginOut(userId int64) (err error) {
+	if userId < 1 {
+		return errors.New("非法参数")
+	}
 	offlineTime := time.Now().Unix()
 	updateUserStatusSQL := "update t_base_data set is_online = false,offline_time = ? where user_id = ?"
-	if _, err := m.DB.Exec(updateUserStatusSQL, offlineTime, userID); err != nil {
+	result, err := m.DB.Exec(updateUserStatusSQL, offlineTime, userId)
+	if err != nil {
 		logger.Error(err)
-		return false, err
+		return err
 	}
-
-	return userID > 0, nil
+	count, err := result.RowsAffected()
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+	if count <= 0 {
+		return errors.New("更新行数为0")
+	}
+	return nil
 }
 
 func Register(equipmentID string) (v *entity.AccountData, err error) {

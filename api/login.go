@@ -18,12 +18,14 @@ func Login(c *gin.Context) {
 	if err := c.Bind(&account); err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	// get flag
 	ok, err := service.Login(&account)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	if !ok {
 		response.ResFailed(c)
@@ -40,19 +42,17 @@ func LogOut(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	// get flag
-	ok, err := service.LoginOut(int64(userID))
+	err = service.LoginOut(int64(userID))
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
-	if !ok {
-		logger.Warnf("登出失败!")
-		response.ResFailed(c)
-	}
 	response.ResSuccess(c, "logout success")
 }
 
@@ -68,6 +68,7 @@ func Register(c *gin.Context) {
 		err := errors.New("接收参数不正确,空参数")
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	// init t_account_data and t_base_data
@@ -75,12 +76,14 @@ func Register(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	// init game data
 	if _, err = service.InitUserGameData(accountData.UserID); err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	response.ResSuccess(c, accountData)
 }
