@@ -5,6 +5,7 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"sTest/entity"
 	m "sTest/pkg/mysql"
+	"sTest/repository/cache"
 	"sTest/util"
 	"strconv"
 	"time"
@@ -15,20 +16,25 @@ func Login(account *entity.AccountData) (ok bool, err error) {
 	sqlStr := "select user_id from t_account_data where account = ? and passwd = ?"
 
 	var userID int64
-	err = m.DB.Get(&userID, sqlStr, account.Account, account.Passwd)
-	if err != nil {
+	if err = m.DB.Get(&userID, sqlStr, account.Account, account.Passwd); err != nil {
 		logger.Error(err)
 		err = errors.New("账号或密码错误，请输入正确的账号和密码")
 		return false, err
 	}
 
-	updateUserStatusSQL := "update t_base_data set is_online = true where user_id = ?"
+	updateUserStatusSQL := "update t_base_data set is_online = 1 where user_id = ?"
 	if _, err := m.DB.Exec(updateUserStatusSQL, userID); err != nil {
 		logger.Error(err)
 		return false, err
 	}
 
-	return userID > 0, nil
+	//检查缓存
+	if _, err := cache.GetUserCache(int(userID)); err != nil {
+		logger.Error(err)
+		return false, err
+	}
+
+	return true, nil
 }
 
 func LoginOut(userId int64) (err error) {
