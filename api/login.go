@@ -5,6 +5,7 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"sTest/entity"
+	"sTest/entity/login_logout"
 	"sTest/pkg/response"
 	"sTest/service"
 	"strconv"
@@ -63,8 +64,18 @@ func LogOut(c *gin.Context) {
 // 密码是4位.可以是固定的
 func Register(c *gin.Context) {
 	// get query params
-	equipmentID := c.PostForm("equipmentId")
-	if equipmentID == "" {
+	//equipmentID := c.PostForm("equipmentId")
+	var param login_logout.LoginReq
+	if err := c.Bind(&param); err != nil {
+		logger.Error(err)
+		response.ResFailed(c)
+		return
+	}
+
+	equipmentID := param.EquipmentID
+	nickName := param.NickName
+
+	if equipmentID == "" || nickName == "" {
 		err := errors.New("接收参数不正确,空参数")
 		logger.Error(err)
 		response.ResFailed(c)
@@ -72,7 +83,7 @@ func Register(c *gin.Context) {
 	}
 
 	// init t_account_data and t_base_data
-	accountData, err := service.Register(equipmentID)
+	accountData, err := service.Register(equipmentID, nickName)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)

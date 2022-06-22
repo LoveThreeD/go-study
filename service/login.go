@@ -3,10 +3,8 @@ package service
 import (
 	"errors"
 	"github.com/asim/go-micro/v3/logger"
-	"github.com/garyburd/redigo/redis"
 	"sTest/entity"
 	m "sTest/pkg/mysql"
-	r "sTest/pkg/redis"
 	"sTest/util"
 	"strconv"
 	"time"
@@ -55,30 +53,44 @@ func LoginOut(userId int64) (err error) {
 	return nil
 }
 
-func Register(equipmentID string) (v *entity.AccountData, err error) {
-	// get random char
-	twoChar := util.RandNCharAccount(2)
-	passwd := util.RandNCharPasswd(4)
+func Register(equipmentID, nickName string) (v *entity.AccountData, err error) {
 
-	// get userId
-	rConn := r.Pool.Get()
-	userID, err := redis.Int(rConn.Do("incr", "userId"))
+	var in entity.BaseData
+	in.AvatarURL = "default.avatar.URL"
+	in.Score = 0
+	in.IsOnline = true
+	in.OfflineTime = -1
+	in.NickName = nickName
+
+	insertSQL := "insert into t_base_data(nickname,avatar_url,score,is_online,offline_time) values(?,?,?,?,?)"
+	result, err := m.DB.Exec(insertSQL, in.NickName, in.AvatarURL, in.Score, in.IsOnline, in.OfflineTime)
 	if err != nil {
 		logger.Error(err)
 		return nil, err
 	}
+
+	userId, err := result.LastInsertId()
+	if err != nil {
+		logger.Error(err)
+		return nil, err
+	}
+
+	// get random char
+	twoChar := util.RandNCharAccount(2)
+	passwd := util.RandNCharPasswd(4)
+
 	// get access
-	account := twoChar + strconv.Itoa(userID)
+	account := twoChar + strconv.Itoa(int(userId))
 
 	// baseDataSql := "insert into t_base_data(user_id,nickname,avatarURL,score,isOnline,offlineTime) values(?,?,?,?,?,?)"
 	sqlStr := "insert into t_account_data(user_id,passwd,equipment_id,account) values(?,?,?,?)"
-	if _, err = m.DB.Exec(sqlStr, userID, passwd, equipmentID, account); err != nil {
+	if _, err = m.DB.Exec(sqlStr, userId, passwd, equipmentID, account); err != nil {
 		logger.Error(err)
 		return nil, err
 	}
 
 	accountData := &entity.AccountData{
-		UserID:      userID,
+		UserID:      int(userId),
 		Passwd:      passwd,
 		EquipmentID: equipmentID,
 		Account:     account,
