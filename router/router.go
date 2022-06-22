@@ -28,6 +28,6 @@ func InitRouter(router *gin.Engine) {
 		level.PUT("leave", api.Leave)
 	}
 	// 获取榜单
-	router.GET("/integral", api.GetRankingLimit50)
+	router.GET("/integral", api.GetRanking)
 
 }

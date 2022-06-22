@@ -11,20 +11,12 @@ import (
 )
 
 func EnterLevel(levelID int, userID int) (gameData *pb.GameData, err error) {
-	// 数据库拿到数据
-	sqlStr := "select user_id ,game_data from g_game_data where user_id = ?"
-	data := entity.GameData{}
-	if err = m.DB.Get(&data, sqlStr, userID); err != nil {
+	// 获取与判断
+	gameData, err = getGameDataAndConvent(userID)
+	if err != nil {
 		logger.Error(err)
 		return nil, err
 	}
-	// 解析
-	gameData = &pb.GameData{}
-	if err = proto.Unmarshal(data.GameData, gameData); err != nil {
-		logger.Error(err)
-		return nil, err
-	}
-
 	// 配置表查验关卡信息
 	// IO操作应该使用结构体接收一次，而不是多次
 	// 大于则提示敬请期待             2-> 第一关没通关
