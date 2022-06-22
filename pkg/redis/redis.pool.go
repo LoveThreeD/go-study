@@ -17,7 +17,7 @@ func init() {
 		MaxActive:   1000000, // 最大连接数量
 		IdleTimeout: 300,     // 连接关闭时间 300秒 (300秒不使用就自动关闭)
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", fmt.Sprintf("%s:%s", r.Address, r.Port))
+			return redis.Dial("tcp", fmt.Sprintf("%s:%d", r.Address, r.Port))
 		},
 	}
 }

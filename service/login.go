@@ -52,42 +52,14 @@ func Register(equipmentID string) (v *entity.AccountData, err error) {
 	passwd := util.RandNCharPasswd(4)
 
 	// get userId
-	// TODO(已完成) 1。缓存事务  2.缓存成功mysql失败问题  [[存在redis完成，但mysql异常退出情况   影响是user_id增加1]]
 	rConn := r.Pool.Get()
-	if _, err := rConn.Do("MULTI"); err != nil {
-		logger.Error(err)
-		return nil, err
-	}
-
-	userID, err := redis.Int(rConn.Do("incr", "userId", 1))
-
-	if _, err = rConn.Do("incr", "userId", userID); err != nil {
-		logger.Error(err)
-		return nil, err
-	}
-
-	// get access
-	account := twoChar + strconv.Itoa(userID)
-
-	// save mysql
-	var ok bool
-	existSQL := "select exists(select user_id from t_account_data where equipment_id = ? limit 1)"
-	err = m.DB.Get(&ok, existSQL, equipmentID)
+	userID, err := redis.Int(rConn.Do("incr", "userId"))
 	if err != nil {
 		logger.Error(err)
 		return nil, err
 	}
-
-	if ok {
-		err = errors.New("设备ID已存在")
-		logger.Error(err)
-		return nil, err
-	}
-
-	if _, err := rConn.Do("EXEC"); err != nil {
-		logger.Error(err)
-		return nil, err
-	}
+	// get access
+	account := twoChar + strconv.Itoa(userID)
 
 	// baseDataSql := "insert into t_base_data(user_id,nickname,avatarURL,score,isOnline,offlineTime) values(?,?,?,?,?,?)"
 	sqlStr := "insert into t_account_data(user_id,passwd,equipment_id,account) values(?,?,?,?)"

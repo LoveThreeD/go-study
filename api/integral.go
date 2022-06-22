@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
+	"sTest/pkg/response"
 	"sTest/service"
 	"strconv"
 )
@@ -15,27 +16,23 @@ func GetRankingLimit50(c *gin.Context) {
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 
 	selfData, err := service.GetSelfIntegral(userID)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
 
 	data, err := service.GetRankingLimit50()
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
 
 	m := make(map[string]interface{})
 	m["top50"] = data
 	m["selfData"] = selfData
-
-	c.JSON(200, gin.H{"code": 200, "msg": m})
+	response.ResSuccess(c, m)
 }

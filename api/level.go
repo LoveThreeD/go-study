@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
+	"sTest/pkg/response"
 	"sTest/service"
 	"strconv"
 )
@@ -15,24 +16,21 @@ func EnterLevel(c *gin.Context) {
 	curLevel, err := strconv.Atoi(curLevelStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 	userID, err := strconv.Atoi(idStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 
 	// 2.判断关卡是否可进入
 	gameData, err := service.EnterLevel(curLevel, userID)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
-	c.JSON(200, gin.H{"code": 200, "msg": gameData})
+	response.ResSuccess(c, gameData)
 }
 
 func MissionAccomplished(c *gin.Context) {
@@ -42,22 +40,19 @@ func MissionAccomplished(c *gin.Context) {
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 	taskID, err := strconv.Atoi(taskIDStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 
 	if err := service.MissionAccomplished(userID, taskID); err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
-	c.JSON(200, gin.H{"code": 200, "msg": true})
+	response.ResSuccess(c, true)
 }
 
 func Leave(c *gin.Context) {
@@ -67,20 +62,17 @@ func Leave(c *gin.Context) {
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 	levelID, err := strconv.Atoi(levelIDStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 
 	if err := service.Leave(userID, levelID); err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
-	c.JSON(200, gin.H{"code": 200, "msg": true})
+	response.ResSuccess(c, true)
 }

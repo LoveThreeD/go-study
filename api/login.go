@@ -5,6 +5,7 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"sTest/entity"
+	"sTest/pkg/response"
 	"sTest/service"
 	"strconv"
 )
@@ -16,24 +17,18 @@ func Login(c *gin.Context) {
 	account := entity.AccountData{}
 	if err := c.Bind(&account); err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
-
 	// get flag
 	ok, err := service.Login(&account)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
-
 	if !ok {
-		logger.Warnf("账户或者密码错误: mac地址....")
-		c.JSON(200, gin.H{"code": 401, "msg": "账号或密码错误，请输入正确的账号和密码"})
+		response.ResFailed(c)
 		return
 	}
-
 	c.JSON(200, gin.H{"code": 200, "msg": "Login Success"})
 }
 
@@ -44,25 +39,21 @@ func LogOut(c *gin.Context) {
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 
 	// get flag
 	ok, err := service.LoginOut(int64(userID))
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
 
 	if !ok {
 		logger.Warnf("登出失败!")
-		c.JSON(200, gin.H{"code": 401, "msg": "登出失败!"})
-		return
+		response.ResFailed(c)
 	}
-
-	c.JSON(200, gin.H{"code": 200, "msg": "LogOut Success"})
+	response.ResSuccess(c, "logout success")
 }
 
 // Register ⽤户注册（唯⼀id，机器码）⽣成账号（8 =字⺟2 + ⽤户id）和密码（4）
@@ -76,24 +67,20 @@ func Register(c *gin.Context) {
 	if equipmentID == "" {
 		err := errors.New("接收参数不正确,空参数")
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
 
 	// init t_account_data and t_base_data
 	accountData, err := service.Register(equipmentID)
 	if err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err.Error()})
-		return
+		response.ResFailed(c)
 	}
 
 	// init game data
 	if _, err = service.InitUserGameData(accountData.UserID); err != nil {
 		logger.Error(err)
-		c.JSON(200, gin.H{"code": 400, "msg": err})
-		return
+		response.ResFailed(c)
 	}
-
-	c.JSON(200, gin.H{"code": 200, "msg": accountData})
+	response.ResSuccess(c, accountData)
 }
