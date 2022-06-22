@@ -41,16 +41,19 @@ func MissionAccomplished(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	taskID, err := strconv.Atoi(taskIDStr)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	if err := service.MissionAccomplished(userID, taskID); err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	response.ResSuccess(c, true)
 }
@@ -63,16 +66,19 @@ func Leave(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	levelID, err := strconv.Atoi(levelIDStr)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	if err := service.Leave(userID, levelID); err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	response.ResSuccess(c, true)
 }

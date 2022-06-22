@@ -12,23 +12,26 @@ import (
 
 func GetRanking(c *gin.Context) {
 	// userID 任务ID
-	userIDStr := c.Query("userID")
+	userIDStr := c.Query("userId")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	selfData, err := service.GetSelfIntegral(userID)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
-	data, err := service.GetRankingLimit50()
+	data, err := service.GetRanking(50)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	m := make(map[string]interface{})

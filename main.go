@@ -7,7 +7,10 @@ import (
 	"github.com/asim/go-micro/v3/registry"
 	"github.com/asim/go-micro/v3/server"
 	"github.com/gin-gonic/gin"
+
 	r "sTest/router"
+	/*定时任务初始化*/
+	_ "sTest/pkg/timing"
 )
 
 var (

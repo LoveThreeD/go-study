@@ -15,18 +15,18 @@ type LevelConfig struct {
 	Level []Level `mapstructure:"list"`
 }
 type Level struct {
-	Id           int   `json:"id"`
-	TaskList     []int `json:"task_list"`
-	FinishReward int   `json:"finish_reward"`
+	Id           int   `mapstructure:"id"`
+	TaskList     []int `mapstructure:"task_list"`
+	FinishReward int   `mapstructure:"finish_reward"`
 }
 
 type TaskConfig struct {
-	Task []Task `json:"list"`
+	Task []Task `mapstructure:"list"`
 }
 
 type Task struct {
-	Id          int `json:"id"`
-	RewardScore int `json:"reward_score"`
+	Id          int `mapstructure:"id"`
+	RewardScore int `mapstructure:"reward_score"`
 }
 
 type Mysql struct {
@@ -49,9 +49,9 @@ type Config struct {
 }
 
 func init() {
-	viper.SetConfigName("level")  //找寻文件的名字
-	viper.SetConfigType("json")   // 找寻文件的类型
-	viper.AddConfigPath("./conf") //.代表当前文件夹找寻，可以多个目录找寻，生成数组
+	viper.SetConfigName("level") //找寻文件的名字
+	viper.SetConfigType("json")  // 找寻文件的类型
+	viper.AddConfigPath("conf")  //.代表当前文件夹找寻，可以多个目录找寻，生成数组
 	//读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
 		if v, ok := err.(viper.ConfigFileNotFoundError); ok {
@@ -66,6 +66,9 @@ func init() {
 		logger.Fatal(err)
 	}
 
+}
+
+func init() {
 	viper.SetConfigName("task") //找寻文件的名字
 	//读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
@@ -80,7 +83,9 @@ func init() {
 	if err := viper.Unmarshal(&TaskConf); err != nil {
 		logger.Fatal(err)
 	}
+}
 
+func init() {
 	viper.SetConfigName("conf") //找寻文件的名字
 	viper.SetConfigType("toml") // 找寻文件的类型
 	//读取配置文件
@@ -96,5 +101,4 @@ func init() {
 	if err := viper.Unmarshal(&Conf); err != nil {
 		logger.Fatal(err)
 	}
-
 }

@@ -8,6 +8,7 @@ import (
 	m "sTest/pkg/mysql"
 	"sTest/pkg/viper"
 	pb "sTest/proto"
+	"strconv"
 )
 
 func EnterLevel(levelID int, userID int) (gameData *pb.GameData, err error) {
@@ -98,19 +99,6 @@ func MissionAccomplished(userID, taskID int) (err error) {
 	}
 
 	// 积分更新  完成任务积分增加
-	var account string
-	findAccountSQL := "select account from t_account_data where user_id = ?"
-	if err = m.DB.Get(&account, findAccountSQL, userID); err != nil {
-		logger.Error(err)
-		return err
-	}
-	var avatarURL string
-	findAvatarSQL := "select avatar_url from t_base_data where user_id = ?"
-	if err = m.DB.Get(&avatarURL, findAvatarSQL, userID); err != nil {
-		logger.Error(err)
-		return err
-	}
-
 	var integral int
 	for _, val := range viper.TaskConf.Task {
 		if val.Id == taskID {
@@ -118,7 +106,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 		}
 	}
 
-	if err = AddIntegral(account+":"+avatarURL, integral); err != nil {
+	if err = AddIntegral(strconv.Itoa(userID), integral); err != nil {
 		logger.Error(err)
 		return err
 	}
@@ -173,19 +161,6 @@ func Leave(userID, levelID int) (err error) {
 	}
 
 	// 增加积分
-	var account string
-	findAccountSQL := "select account from t_account_data where user_id = ?"
-	if err = m.DB.Get(&account, findAccountSQL, userID); err != nil {
-		logger.Error(err)
-		return err
-	}
-	var avatarURL string
-	findAvatarSQL := "select avatar_url from t_base_data where user_id = ?"
-	if err = m.DB.Get(&avatarURL, findAvatarSQL, userID); err != nil {
-		logger.Error(err)
-		return err
-	}
-
 	var integral int
 	for _, val := range viper.LevelConf.Level {
 		if val.Id == levelID {
@@ -193,7 +168,7 @@ func Leave(userID, levelID int) (err error) {
 		}
 	}
 
-	if err = AddIntegral(account+":"+avatarURL, integral); err != nil {
+	if err = AddIntegral(strconv.Itoa(userID), integral); err != nil {
 		logger.Error(err)
 		return err
 	}
