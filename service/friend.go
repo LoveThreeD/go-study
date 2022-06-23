@@ -59,3 +59,22 @@ func DeleteFriendList(friend *friend_dto.ReqFriendAdd) (err error) {
 
 	return nil
 }
+
+// GetRecommendFriends  推荐好友, 1.自己国家 2.积分大于自己  3.每次5个,不足补充其它国家的
+func GetRecommendFriends(req *friend_dto.ReqRecommend) (f []dto.UserBaseData, err error) {
+
+	// 查询自身
+	user, err := document.SelectUserByUserIdAll(int(req.UserId))
+	if err != nil {
+		return nil, errors.Wrap(err, response.MsgFailed)
+	}
+
+	// 查询符合条件
+	users, err := document.SelectFriendByCountryAndIntegral(user.Country, user.Integral, 5)
+	if err != nil {
+		return nil, errors.Wrap(err, response.MsgFailed)
+	}
+	return users, nil
+
+	return
+}

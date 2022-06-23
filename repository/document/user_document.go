@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"sTest/entity/dto"
 	"sTest/entity/friend_dto"
 	"sTest/pkg/mongo_db"
@@ -40,6 +41,21 @@ func SelectUserByUserId(userId int) (c *dto.UserCache, err error) {
 	c.NickName = item.BaseData.NickName
 	c.AvatarUrl = item.BaseData.AvatarURL
 	c.IsOnline = 1
+	return
+}
+
+func SelectUserByUserIdAll(userId int) (c *dto.UserBaseData, err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	c = &dto.UserBaseData{}
+	if err = collection.FindOne(context.TODO(), filter).Decode(c); err != nil {
+		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
 	return
 }
 
@@ -167,6 +183,28 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
 	}
 	return nil
+}
+
+func SelectFriendByCountryAndIntegral(country string, integral int, limit int64) (c []dto.UserBaseData, err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{
+		"country": country,
+		"$gt": bson.M{
+			"integral": integral,
+		},
+	}
+	c = []dto.UserBaseData{}
+	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(limit))
+	if err != nil {
+		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if err = cursor.All(context.TODO(), &c); err != nil {
+		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return
 }
 
 // return mongo collection connection
