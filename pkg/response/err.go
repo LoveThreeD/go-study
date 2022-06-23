@@ -17,6 +17,7 @@ var (
 	MsgMongoCollConnectionError = "Mongo文档连接失败"
 	MsgMongoCreateUserError     = "Mongo创建用户失败"
 	MsgMongoSelectUserError     = "Mongo查询用户失败"
+	MsgMongoUpdateUserError     = "Mongo更新用户失败"
 
 	MsgFailed        = "处理失败"
 	MsgInitDataError = "初始化数据失败"

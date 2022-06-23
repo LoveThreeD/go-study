@@ -81,6 +81,94 @@ func IncrIntegral(userId int, integral int) (err error) {
 	return
 }
 
+// XXX 通过userId更新数组可以封装
+
+func UpdateApplicationListByUserId(userId int64, applicationId int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$push": bson.M{
+			"applicationlist": applicationId,
+		},
+	}
+	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return nil
+}
+
+func UpdateFriendsByUserId(userId int64, friendId int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$push": bson.M{
+			"friends": friendId,
+		},
+	}
+	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return nil
+}
+
+// DeleteApplicationList 删除申请列表中的userId
+func DeleteApplicationList(userId int64, friendId int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$pull": bson.M{
+			"applicationlist": friendId,
+		},
+	}
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if result.ModifiedCount < 1 {
+		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+	}
+	return nil
+}
+
+// DeleteFriendList 删除好友列表中的userId
+func DeleteFriendList(userId int64, friendId int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$pull": bson.M{
+			"friends": friendId,
+		},
+	}
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if result.ModifiedCount < 1 {
+		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+	}
+	return nil
+}
+
 // return mongo collection connection
 func getUserDocumentConnect() (c *mongo.Collection, err error) {
 	return mongo_db.GetDocumentConnect("user", "base")

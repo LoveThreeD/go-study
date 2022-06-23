@@ -36,6 +36,12 @@ func InitRouter(router *gin.Engine) {
 	{
 		// 搜索好友
 		friend.GET("search", api.SearchFriend)
+		// 申请好友
+		friend.POST("application", api.AddApplicationList)
+		// 确认好友
+		friend.POST("add", api.AddFriend)
+		// 删除好友
+		friend.DELETE("delete", api.DeleteFriend)
 	}
 
 	// 获取榜单
