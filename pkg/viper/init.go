@@ -43,9 +43,19 @@ type Redis struct {
 	Port    int    `toml:"Port"`
 }
 
+type Mongo struct {
+	AuthMechanism string `toml:"AuthMechanism"`
+	AuthSource    string `toml:"AuthSource"`
+	Username      string `toml:"Username"`
+	Password      string `toml:"Password"`
+	Address       string `toml:"Address"`
+	Port          int    `toml:"Port"`
+}
+
 type Config struct {
 	Mysql Mysql `toml:"Mysql"`
 	Redis Redis `toml:"Redis"`
+	Mongo Mongo `toml:"Mongo"`
 }
 
 func init() {

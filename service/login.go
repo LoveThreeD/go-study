@@ -1,12 +1,15 @@
 package service
 
 import (
-	"errors"
 	"github.com/asim/go-micro/v3/logger"
+	"github.com/pkg/errors"
 	"sTest/entity"
+	"sTest/entity/login_logout"
 	"sTest/pkg/auth"
 	m "sTest/pkg/mysql"
+	"sTest/pkg/response"
 	"sTest/repository/cache"
+	"sTest/repository/document"
 	"sTest/util"
 	"strconv"
 	"time"
@@ -66,25 +69,26 @@ func LoginOut(userId int64) (err error) {
 	return nil
 }
 
-func Register(equipmentID, nickName string) (v *entity.AccountData, err error) {
-
-	var in entity.BaseData
-	in.AvatarURL = "default.avatar.URL"
-	in.Score = 0
-	in.IsOnline = true
-	in.OfflineTime = -1
-	in.NickName = nickName
-
-	insertSQL := "insert into t_base_data(nickname,avatar_url,score,is_online,offline_time) values(?,?,?,?,?)"
-	result, err := m.DB.Exec(insertSQL, in.NickName, in.AvatarURL, in.Score, in.IsOnline, in.OfflineTime)
+func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
+	userId, err := InitUserGameData()
 	if err != nil {
-		logger.Error(err)
-		return nil, err
+		return nil, errors.Wrap(err, response.MsgInitDataError)
 	}
 
-	userId, err := result.LastInsertId()
-	if err != nil {
-		logger.Error(err)
+	// store user data in mongo
+	item := entity.UserBaseData{
+		UserId: userId,
+		BaseData: entity.BaseData{
+			NickName:    param.NickName,
+			AvatarURL:   "default.avatar.URL",
+			Score:       0,
+			IsOnline:    true,
+			OfflineTime: -1,
+		},
+		Age: param.Age,
+	}
+
+	if err = document.CreateUser(&item); err != nil {
 		return nil, err
 	}
 
@@ -97,7 +101,7 @@ func Register(equipmentID, nickName string) (v *entity.AccountData, err error) {
 
 	// baseDataSql := "insert into t_base_data(user_id,nickname,avatarURL,score,isOnline,offlineTime) values(?,?,?,?,?,?)"
 	sqlStr := "insert into t_account_data(user_id,passwd,equipment_id,account) values(?,?,?,?)"
-	if _, err = m.DB.Exec(sqlStr, userId, passwd, equipmentID, account); err != nil {
+	if _, err = m.DB.Exec(sqlStr, userId, passwd, param.EquipmentID, account); err != nil {
 		logger.Error(err)
 		return nil, err
 	}
@@ -105,7 +109,7 @@ func Register(equipmentID, nickName string) (v *entity.AccountData, err error) {
 	accountData := &entity.AccountData{
 		UserID:      int(userId),
 		Passwd:      passwd,
-		EquipmentID: equipmentID,
+		EquipmentID: param.EquipmentID,
 		Account:     account,
 	}
 	return accountData, nil

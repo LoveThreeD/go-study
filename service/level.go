@@ -177,7 +177,7 @@ func Leave(userID, levelID int) (err error) {
 }
 
 // InitUserGameData 初始化用户游戏数据
-func InitUserGameData(userID int) (ok bool, err error) {
+func InitUserGameData() (userId int64, err error) {
 	// 1.初始化数据
 	levelInit := pb.LevelData{
 		CurLevel: 1,
@@ -196,16 +196,21 @@ func InitUserGameData(userID int) (ok bool, err error) {
 	bytes, err := proto.Marshal(&data)
 	if err != nil {
 		logger.Error(err)
-		return false, err
+		return 0, err
 	}
 
 	// 2.保存到MySql
-	insertGameDataSQL := "insert into g_game_data(user_id,game_data) values(?,?)"
-	if _, err := m.DB.Exec(insertGameDataSQL, userID, bytes); err != nil {
+	insertGameDataSQL := "insert into g_game_data(game_data) values(?)"
+	result, err := m.DB.Exec(insertGameDataSQL, bytes)
+	if err != nil {
 		logger.Error(err)
-		return false, err
+		return 0, err
 	}
-	return true, nil
+	lastInsertId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return lastInsertId, nil
 }
 
 func getGameDataAndConvent(userID int) (*pb.GameData, error) {

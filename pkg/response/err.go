@@ -11,6 +11,16 @@ package response
 //              ----------------------------------------------------------
 
 var (
+	MsgConventErr = "类型转换异常"
+
+	MsgMongoDbConnectionError   = "Mongo数据库连接失败"
+	MsgMongoCollConnectionError = "Mongo文档连接失败"
+	MsgMongoCreateUserError     = "Mongo创建用户失败"
+
+	MsgInitDataError = "初始化数据失败"
+)
+
+var (
 	OK  = response(200, "ok")   // 通用成功
 	Err = response(500, "调用失败") // 通用错误
 

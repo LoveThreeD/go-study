@@ -10,3 +10,11 @@ Url = "charset=utf8mb4&parseTime=True"
 Address = "192.168.20.132"
 Type = "tcp"
 Port = 6379
+
+[Mongo]
+AuthMechanism = "SCRAM-SHA-1"
+AuthSource = "admin"
+Username = "admin"
+Password = ""
+Address = "192.168.20.132"
+Port = 27017

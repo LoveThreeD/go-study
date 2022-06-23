@@ -1,9 +1,9 @@
 package api
 
 import (
-	"errors"
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"sTest/entity"
 	"sTest/entity/login_logout"
 	"sTest/pkg/response"
@@ -24,7 +24,7 @@ func Login(c *gin.Context) {
 	// get flag
 	token, err := service.Login(&account)
 	if err != nil {
-		logger.Error(err)
+		logger.Error(errors.Cause(err))
 		response.ResFailed(c)
 		return
 	}
@@ -79,18 +79,12 @@ func Register(c *gin.Context) {
 	}
 
 	// init t_account_data and t_base_data
-	accountData, err := service.Register(equipmentID, nickName)
+	accountData, err := service.Register(&param)
 	if err != nil {
-		logger.Error(err)
+		logger.Errorf("%+v", err)
 		response.ResFailed(c)
 		return
 	}
 
-	// init game data
-	if _, err = service.InitUserGameData(accountData.UserID); err != nil {
-		logger.Error(err)
-		response.ResFailed(c)
-		return
-	}
 	response.ResSuccess(c, accountData)
 }
