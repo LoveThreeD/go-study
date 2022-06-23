@@ -20,10 +20,3 @@ type GameData struct {
 	UserID   int    `db:"user_id" form:"userId"`
 	GameData []byte `db:"game_data" form:"gameData"`
 }
-
-type UserBaseData struct {
-	BaseData BaseData
-
-	UserId int64 `db:"user_id"`
-	Age    int   `db:"age"`
-}

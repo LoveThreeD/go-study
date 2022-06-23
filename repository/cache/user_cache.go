@@ -6,7 +6,7 @@ import (
 	redisBase "github.com/garyburd/redigo/redis"
 	"sTest/entity/dto"
 	"sTest/pkg/redis"
-	"sTest/repository/data"
+	"sTest/repository/document"
 )
 
 const (
@@ -46,9 +46,8 @@ func GetUserCache(userId int) (cache *dto.UserCache, err error) {
 	}
 	// 缓存未命中
 	if !ok {
-		userCache, err := data.GetNickNameAndAvatar(userId)
+		userCache, err := document.SelectUserByUserId(userId)
 		if err != nil {
-			logger.Error(err)
 			return nil, err
 		}
 		if err = AddUser(userId, userCache); err != nil {

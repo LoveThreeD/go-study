@@ -24,7 +24,7 @@ func Login(c *gin.Context) {
 	// get flag
 	token, err := service.Login(&account)
 	if err != nil {
-		logger.Error(errors.Cause(err))
+		logger.Errorf("%+v", err)
 		response.ResFailed(c)
 		return
 	}

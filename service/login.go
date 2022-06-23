@@ -4,6 +4,7 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/pkg/errors"
 	"sTest/entity"
+	"sTest/entity/dto"
 	"sTest/entity/login_logout"
 	"sTest/pkg/auth"
 	m "sTest/pkg/mysql"
@@ -34,14 +35,12 @@ func Login(account *entity.AccountData) (token string, err error) {
 
 	//检查缓存
 	if _, err := cache.GetUserCache(int(userID)); err != nil {
-		logger.Error(err)
 		return "", err
 	}
 
 	// 生成token
 	token, err = auth.GenerateToken(int(userID))
 	if err != nil {
-		logger.Error(err)
 		return "", err
 	}
 	return
@@ -76,7 +75,7 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 	}
 
 	// store user data in mongo
-	item := entity.UserBaseData{
+	item := dto.UserBaseData{
 		UserId: userId,
 		BaseData: entity.BaseData{
 			NickName:    param.NickName,
