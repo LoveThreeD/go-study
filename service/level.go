@@ -8,6 +8,7 @@ import (
 	m "sTest/pkg/mysql"
 	"sTest/pkg/viper"
 	pb "sTest/proto"
+	"sTest/repository/document"
 	"strconv"
 )
 
@@ -106,6 +107,10 @@ func MissionAccomplished(userID, taskID int) (err error) {
 		}
 	}
 
+	// mongo integral incr  积分增加(mongo)
+	go document.IncrIntegral(userID, integral)
+
+	// redis integral incr  积分增加(redis)
 	if err = AddIntegral(strconv.Itoa(userID), integral); err != nil {
 		logger.Error(err)
 		return err
@@ -167,6 +172,9 @@ func Leave(userID, levelID int) (err error) {
 			integral = val.FinishReward
 		}
 	}
+
+	// mongo integral incr  积分增加(mongo)
+	go document.IncrIntegral(userID, integral)
 
 	if err = AddIntegral(strconv.Itoa(userID), integral); err != nil {
 		logger.Error(err)

@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"sTest/entity/dto"
+	"sTest/entity/friend_dto"
 	"sTest/pkg/mongo_db"
 	"sTest/pkg/response"
 )
@@ -39,6 +40,44 @@ func SelectUserByUserId(userId int) (c *dto.UserCache, err error) {
 	c.NickName = item.BaseData.NickName
 	c.AvatarUrl = item.BaseData.AvatarURL
 	c.IsOnline = 1
+	return
+}
+
+func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []dto.UserBaseData, err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{
+		"basedata.nickname": reqParams.NickName,
+	}
+	c = []dto.UserBaseData{}
+	cursor, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if err = cursor.All(context.TODO(), &c); err != nil {
+		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return
+}
+
+func IncrIntegral(userId int, integral int) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$inc": bson.M{
+			"integral": integral,
+		},
+	}
+	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
 	return
 }
 

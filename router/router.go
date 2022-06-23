@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"sTest/api"
-	"sTest/middleware"
 )
 
 func InitRouter(router *gin.Engine) {
@@ -11,9 +10,9 @@ func InitRouter(router *gin.Engine) {
 	router.POST("/register", api.Register)
 	router.POST("/logout", api.LogOut)
 
-	router.Use(middleware.UserAuthMiddleware(
+	/*router.Use(middleware.UserAuthMiddleware(
 		middleware.AllowPathPrefixSkipper("/login", "/register"),
-	))
+	))*/
 
 	user := router.Group("/user")
 	{
@@ -32,6 +31,13 @@ func InitRouter(router *gin.Engine) {
 		// 完成关卡
 		level.PUT("leave", api.Leave)
 	}
+
+	friend := router.Group("/friend")
+	{
+		// 搜索好友
+		friend.GET("search", api.SearchFriend)
+	}
+
 	// 获取榜单
 	router.GET("/integral", api.GetRanking)
 

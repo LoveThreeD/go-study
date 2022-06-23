@@ -84,7 +84,9 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 			IsOnline:    true,
 			OfflineTime: -1,
 		},
-		Age: param.Age,
+		Age:      param.Age,
+		Country:  param.Country,
+		Integral: 0,
 	}
 
 	if err = document.CreateUser(&item); err != nil {

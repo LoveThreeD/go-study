@@ -18,7 +18,7 @@ func UserAuthMiddleware(skippers ...SkipperFunc) gin.HandlerFunc {
 		// get token
 		token := c.GetHeader("Authorization")
 		if token == "" {
-			response.ResFailedWithData(c, response.ErrNoPermission)
+			response.ResultFailed(c, response.ErrNoPermission)
 			c.Next()
 			return
 		}
@@ -26,7 +26,7 @@ func UserAuthMiddleware(skippers ...SkipperFunc) gin.HandlerFunc {
 		// parse token
 		claims, err := auth.ParseToken(token)
 		if err != nil {
-			response.ResFailedWithData(c, response.ErrNoPermission)
+			response.ResultFailed(c, response.ErrNoPermission)
 			c.Next()
 			return
 		}

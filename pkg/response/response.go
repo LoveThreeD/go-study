@@ -73,6 +73,10 @@ func ResSuccessWithData(c *gin.Context, v interface{}) {
 }
 
 func ResFailedWithData(c *gin.Context, v interface{}) {
+	ResJSON(c, http.StatusOK, Err.WithData(v))
+}
+
+func ResultFailed(c *gin.Context, v interface{}) {
 	ResJSON(c, http.StatusOK, v)
 }
 
