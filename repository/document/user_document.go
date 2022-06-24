@@ -10,6 +10,7 @@ import (
 	"sTest/entity/friend_dto"
 	"sTest/pkg/mongo_db"
 	"sTest/pkg/response"
+	"sTest/repository/document/mongo_key"
 )
 
 // CreateUser create one user
@@ -50,7 +51,7 @@ func SelectUserByUserIdAll(userId int) (c *dto.UserBaseData, err error) {
 		return nil, err
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	c = &dto.UserBaseData{}
 	if err = collection.FindOne(context.TODO(), filter).Decode(c); err != nil {
@@ -65,10 +66,12 @@ func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []dto.UserBa
 		return nil, err
 	}
 	filter := bson.M{
-		"basedata.nickname": reqParams.NickName,
+		mongo_key.BaseNickName: reqParams.NickName,
 	}
+	// sort
+	sort := bson.D{{mongo_key.BaseIsOnline, -1}, {mongo_key.BaseOfflineTime, -1}}
 	c = []dto.UserBaseData{}
-	cursor, err := collection.Find(context.TODO(), filter)
+	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetSort(sort))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
@@ -254,11 +257,11 @@ func UpdateFriendsByUserId(userId int64, friendId int64) (err error) {
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$push": bson.M{
-			"friends": friendId,
+			mongo_key.BaseFriends: friendId,
 		},
 	}
 	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
@@ -298,11 +301,11 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$pull": bson.M{
-			"friends": friendId,
+			mongo_key.BaseFriends: friendId,
 		},
 	}
 	result, err := collection.UpdateOne(context.TODO(), filter, update)
@@ -315,6 +318,7 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 	return nil
 }
 
+// SelectFriendByCountryAndIntegral 好友推荐
 func SelectFriendByCountryAndIntegral(country string, integral int, limit int64, diffCountry bool) (c []dto.UserBaseData, err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
@@ -322,8 +326,8 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 	}
 
 	filter := bson.M{
-		"country": country,
-		"integral": bson.M{
+		mongo_key.BaseCountry: country,
+		mongo_key.BaseIntegral: bson.M{
 			"$gt": integral,
 		},
 	}
@@ -331,20 +335,17 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 	// diffCountry is true. add Recommend friend
 	if diffCountry {
 		filter = bson.M{
-			"country": bson.M{
+			mongo_key.BaseCountry: bson.M{
 				"$ne": country,
 			},
-			"integral": bson.M{
+			mongo_key.BaseIntegral: bson.M{
 				"$gt": integral,
 			},
 		}
 	}
 
-	// sort
-	sort := bson.D{{"basedata.isonline", -1}, {"basedata.offlinetime", -1}}
-
 	c = []dto.UserBaseData{}
-	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetSort(sort), options.Find().SetLimit(limit))
+	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(limit))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
@@ -361,11 +362,11 @@ func AddApplied(userId int64, item *dto.Applied) (err error) {
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$push": bson.M{
-			"applied": item,
+			mongo_key.BaseApplied: item,
 		},
 	}
 	result, err := collection.UpdateOne(context.TODO(), filter, update)
@@ -385,12 +386,12 @@ func UpdateAppliedStatus(userId int64, item *dto.Applied) (err error) {
 		return
 	}
 	filter := bson.M{
-		"userid":         userId,
-		"applied.userid": item.UserId,
+		mongo_key.BaseUserId:          userId,
+		mongo_key.BaseUserIdInApplied: item.UserId,
 	}
 	update := bson.M{
 		"$set": bson.M{
-			"applied.$.status": item.Status,
+			mongo_key.BaseUpStatusInApplied: item.Status,
 		},
 	}
 	result, err := collection.UpdateOne(context.TODO(), filter, update)

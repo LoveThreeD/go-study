@@ -11,6 +11,7 @@ import (
 	"sTest/pkg/response"
 	"sTest/repository/cache"
 	"sTest/repository/document"
+	"sTest/repository/document/mongo_key"
 	"sTest/util"
 	"strconv"
 	"time"
@@ -34,7 +35,7 @@ func Login(account *entity.AccountData) (token string, err error) {
 	}*/
 
 	//改变mongo中用户的在线状态
-	if err = document.UpdateElementByUserId(_isOnline, userID, true); err != nil {
+	if err = document.UpdateElementByUserId(mongo_key.BaseIsOnline, userID, true); err != nil {
 		return "", errors.Wrap(err, response.MsgFailed)
 	}
 
@@ -57,10 +58,9 @@ func LoginOut(userId int64) (err error) {
 	}
 	offlineTime := time.Now().Unix()
 	//改变mongo中用户的在线状态
-	if err = document.UpdateTwoElementByUserId(userId, _isOnline, _offlineTime, false, offlineTime); err != nil {
+	if err = document.UpdateTwoElementByUserId(userId, mongo_key.BaseIsOnline, mongo_key.BaseOfflineTime, false, offlineTime); err != nil {
 		return errors.Wrap(err, response.MsgFailed)
 	}
-
 	return nil
 }
 
@@ -73,16 +73,14 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 	// store user data in mongo
 	item := dto.UserBaseData{
 		UserId: userId,
-		BaseData: entity.BaseData{
-			NickName:    param.NickName,
-			AvatarURL:   "default.avatar.URL",
-			Score:       0,
-			IsOnline:    false,
-			OfflineTime: -1,
-		},
-		Age:      param.Age,
-		Country:  param.Country,
-		Integral: 0,
+
+		NickName:    param.NickName,
+		AvatarURL:   "default.avatar.URL",
+		IsOnline:    false,
+		OfflineTime: -1,
+		Age:         param.Age,
+		Country:     param.Country,
+		Integral:    0,
 		/*ApplicationList: []int64{},
 		AlreadyAppliedList: []int64{},
 		NoPassList: []int64{},

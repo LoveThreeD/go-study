@@ -22,6 +22,11 @@ type UserBaseData struct {
 
 	// 好友列表 Friend list
 	Friends []int64
+
+	NickName    string
+	AvatarURL   string
+	IsOnline    bool
+	OfflineTime int64
 }
 
 type Applied struct {
