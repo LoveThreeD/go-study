@@ -42,6 +42,8 @@ func InitRouter(router *gin.Engine) {
 		friend.POST("add", api.AddFriend)
 		// 删除好友
 		friend.DELETE("delete", api.DeleteFriend)
+		// 推荐好友
+		friend.GET("recommendList", api.RecommendFriend)
 	}
 
 	// 获取榜单

@@ -82,3 +82,23 @@ func DeleteFriend(c *gin.Context) {
 	}
 	response.ResSuccessWithData(c, response.OK)
 }
+
+// RecommendFriend 好友推荐
+func RecommendFriend(c *gin.Context) {
+	// params bind 参数绑定
+	var params friend_dto.ReqRecommend
+	if err := c.ShouldBindQuery(&params); err != nil {
+		logger.Errorf("%+v", err)
+		response.ResFailedWithData(c, response.ErrParam)
+		return
+	}
+	// search user
+	friends, err := service.GetRecommendFriends(&params)
+	if err != nil {
+		logger.Errorf("%+v", err)
+		response.ResFailedWithData(c, response.MsgFailed)
+		return
+	}
+
+	response.ResSuccess(c, friends)
+}

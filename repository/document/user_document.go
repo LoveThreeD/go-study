@@ -185,17 +185,31 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 	return nil
 }
 
-func SelectFriendByCountryAndIntegral(country string, integral int, limit int64) (c []dto.UserBaseData, err error) {
+func SelectFriendByCountryAndIntegral(country string, integral int, limit int64, diffCountry bool) (c []dto.UserBaseData, err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
 	}
+
 	filter := bson.M{
 		"country": country,
-		"$gt": bson.M{
-			"integral": integral,
+		"integral": bson.M{
+			"$gt": integral,
 		},
 	}
+
+	// diffCountry is true. add Recommend friend
+	if diffCountry {
+		filter = bson.M{
+			"country": bson.M{
+				"$ne": country,
+			},
+			"integral": bson.M{
+				"$gt": integral,
+			},
+		}
+	}
+
 	c = []dto.UserBaseData{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(limit))
 	if err != nil {
