@@ -46,7 +46,7 @@ func GetUserCache(userId int) (cache *dto.UserCache, err error) {
 	}
 	// 缓存未命中
 	if !ok {
-		userCache, err := document.SelectUserByUserId(userId)
+		userCache, err := document.SelectUserByUserId(int64(userId))
 		if err != nil {
 			return nil, err
 		}

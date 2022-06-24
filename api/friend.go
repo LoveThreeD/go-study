@@ -47,8 +47,8 @@ func AddApplicationList(c *gin.Context) {
 	response.ResSuccessWithData(c, response.OK)
 }
 
-// AddFriend 从申请列表中添加到好友列表
-func AddFriend(c *gin.Context) {
+// Ack 同意/拒绝
+func Ack(c *gin.Context) {
 	// params bind 参数绑定
 	var params friend_dto.ReqFriendAdd
 	if err := c.Bind(&params); err != nil {
@@ -56,6 +56,18 @@ func AddFriend(c *gin.Context) {
 		response.ResFailedWithData(c, response.ErrParam)
 		return
 	}
+
+	// 拒绝
+	if params.Agree == 0 {
+		if err := service.NotPass(&params); err != nil {
+			logger.Errorf("%+v", err)
+			response.ResFailedWithData(c, response.MsgFailed)
+			return
+		}
+		response.ResSuccess(c, true)
+		return
+	}
+
 	// search user
 	if err := service.AddFriendList(&params); err != nil {
 		logger.Errorf("%+v", err)

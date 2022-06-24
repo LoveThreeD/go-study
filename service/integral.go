@@ -27,7 +27,7 @@ const (
 func AddIntegral(key string, integral int) (err error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
-	if _, err := conn.Do("zincrby", GetIntegralKey(), integral, key); err != nil {
+	if _, err := conn.Do("zincrby", GetLastIntegralKey(), integral, key); err != nil {
 		logger.Error(err)
 		return err
 	}
@@ -43,7 +43,7 @@ func GetRanking(count int) (ranking []entity.LeaderBoardData, err error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
 	// zrevrangebyscore ranking +inf -inf limit 0 50
-	rels, err := redis.Strings(conn.Do("zrevrangebyscore", GetIntegralKey(), "+inf", "-inf", "WITHSCORES", "limit", 0, count))
+	rels, err := redis.Strings(conn.Do("zrevrangebyscore", GetLastIntegralKey(), "+inf", "-inf", "WITHSCORES", "limit", 0, count))
 	if err != nil {
 		logger.Error(err)
 		return
@@ -87,7 +87,7 @@ func GetSelfIntegral(userID int) (ranking entity.LeaderBoardData, err error) {
 		return
 	}
 
-	number, err := redis.Int(conn.Do("ZREVRANK", GetIntegralKey(), userID))
+	number, err := redis.Int(conn.Do("ZREVRANK", GetLastIntegralKey(), userID))
 	if err != nil {
 		switch err.Error() {
 		case "redigo: nil returned":
@@ -98,7 +98,7 @@ func GetSelfIntegral(userID int) (ranking entity.LeaderBoardData, err error) {
 		}
 	}
 
-	score, err := redis.Int(conn.Do("zscore", GetIntegralKey(), userID))
+	score, err := redis.Int(conn.Do("zscore", GetLastIntegralKey(), userID))
 	if err != nil {
 		switch err.Error() {
 		case "redigo: nil returned":
@@ -116,11 +116,6 @@ func GetSelfIntegral(userID int) (ranking entity.LeaderBoardData, err error) {
 		AvatarURL: userCache.AvatarUrl,
 	}
 	return ranking, nil
-}
-
-func GetIntegralKey() string {
-	month := time.Now().Month().String()
-	return fmt.Sprintf("%s:%d", LeaderBoardName, month)
 }
 
 func GetLastIntegralKey() string {

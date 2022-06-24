@@ -39,7 +39,7 @@ func InitRouter(router *gin.Engine) {
 		// 申请好友
 		friend.POST("application", api.AddApplicationList)
 		// 确认好友
-		friend.POST("add", api.AddFriend)
+		friend.POST("ack", api.Ack)
 		// 删除好友
 		friend.DELETE("delete", api.DeleteFriend)
 		// 推荐好友

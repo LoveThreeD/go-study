@@ -17,11 +17,13 @@ func EnterLevel(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	userID, err := strconv.Atoi(idStr)
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 
 	// 2.判断关卡是否可进入
@@ -29,6 +31,7 @@ func EnterLevel(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		response.ResFailed(c)
+		return
 	}
 	response.ResSuccess(c, gameData)
 }

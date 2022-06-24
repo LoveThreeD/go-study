@@ -24,14 +24,14 @@ func CreateUser(item *dto.UserBaseData) (err error) {
 	return
 }
 
-func SelectUserByUserId(userId int) (c *dto.UserCache, err error) {
+func SelectUserByUserId(userId int64) (c *dto.UserCache, err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
 	}
 	filter := bson.M{
-		"userid":   userId,
-		"basedata": 1,
+		"userid": userId,
+		//"basedata": 1,
 	}
 	item := &dto.UserBaseData{}
 	if err = collection.FindOne(context.TODO(), filter).Decode(item); err != nil {
@@ -114,6 +114,88 @@ func UpdateApplicationListByUserId(userId int64, applicationId int64) (err error
 	}
 	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
 		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return nil
+}
+
+func UpdateAlreadyAppliedListByUserId(userId int64, alreadyApplied int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$push": bson.M{
+			"alreadyappliedlist": alreadyApplied,
+		},
+	}
+	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return nil
+}
+
+func UpdateNoPassListByUserId(userId int64, noPass int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$push": bson.M{
+			"nopass": noPass,
+		},
+	}
+	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return nil
+}
+
+// UpdateAddElementByUserId 通过userId查找文档,添加文档中arrayName数组的元素
+func UpdateAddElementByUserId(arrayName string, userId int64, noPass int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$push": bson.M{
+			arrayName: noPass,
+		},
+	}
+	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	return nil
+}
+
+// DeleteElementByUserId 通过userId查找文档,删除文档中arrayName数组的元素
+func DeleteElementByUserId(arrayName string, userId int64, friendId int64) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$pull": bson.M{
+			arrayName: friendId,
+		},
+	}
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if result.ModifiedCount < 1 {
+		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
 	}
 	return nil
 }
@@ -219,6 +301,55 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	return
+}
+
+// AddApplied 添加申请
+func AddApplied(userId int64, item *dto.Applied) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$push": bson.M{
+			"applied": item,
+		},
+	}
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if result.ModifiedCount < 1 {
+		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+	}
+	return nil
+}
+
+// UpdateAppliedStatus 修改申请状态
+func UpdateAppliedStatus(userId int64, item *dto.Applied) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid":         userId,
+		"applied.userid": item.UserId,
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"applied.$.status": item.Status,
+		},
+	}
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if result.ModifiedCount < 1 {
+		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+	}
+	return nil
 }
 
 // return mongo collection connection
