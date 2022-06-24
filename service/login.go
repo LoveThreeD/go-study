@@ -27,10 +27,15 @@ func Login(account *entity.AccountData) (token string, err error) {
 		return "", err
 	}
 
-	updateUserStatusSQL := "update t_base_data set is_online = 1 where user_id = ?"
+	/*updateUserStatusSQL := "update t_base_data set is_online = 1 where user_id = ?"
 	if _, err := m.DB.Exec(updateUserStatusSQL, userID); err != nil {
 		logger.Error(err)
 		return "", err
+	}*/
+
+	//改变mongo中用户的在线状态
+	if err = document.UpdateElementByUserId(_isOnline, userID, true); err != nil {
+		return "", errors.Wrap(err, response.MsgFailed)
 	}
 
 	//检查缓存
@@ -51,20 +56,11 @@ func LoginOut(userId int64) (err error) {
 		return errors.New("非法参数")
 	}
 	offlineTime := time.Now().Unix()
-	updateUserStatusSQL := "update t_base_data set is_online = false,offline_time = ? where user_id = ?"
-	result, err := m.DB.Exec(updateUserStatusSQL, offlineTime, userId)
-	if err != nil {
-		logger.Error(err)
-		return err
+	//改变mongo中用户的在线状态
+	if err = document.UpdateTwoElementByUserId(userId, _isOnline, _offlineTime, false, offlineTime); err != nil {
+		return errors.Wrap(err, response.MsgFailed)
 	}
-	count, err := result.RowsAffected()
-	if err != nil {
-		logger.Error(err)
-		return err
-	}
-	if count <= 0 {
-		return errors.New("更新行数为0")
-	}
+
 	return nil
 }
 
@@ -81,7 +77,7 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 			NickName:    param.NickName,
 			AvatarURL:   "default.avatar.URL",
 			Score:       0,
-			IsOnline:    true,
+			IsOnline:    false,
 			OfflineTime: -1,
 		},
 		Age:      param.Age,

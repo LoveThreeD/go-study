@@ -200,6 +200,54 @@ func DeleteElementByUserId(arrayName string, userId int64, friendId int64) (err 
 	return nil
 }
 
+// UpdateElementByUserId 更新该文档中的任一值
+func UpdateElementByUserId(itemName string, userId int64, v interface{}) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$set": bson.M{
+			itemName: v,
+		},
+	}
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if result.ModifiedCount < 1 {
+		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+	}
+	return nil
+}
+
+func UpdateTwoElementByUserId(userId int64, itemName1, itemName2 string, v1, v2 interface{}) (err error) {
+	collection, err := getUserDocumentConnect()
+	if err != nil {
+		return
+	}
+	filter := bson.M{
+		"userid": userId,
+	}
+	update := bson.M{
+		"$set": bson.M{
+			itemName1: v1,
+			itemName2: v2,
+		},
+	}
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return errors.Wrap(err, response.MsgMongoSelectUserError)
+	}
+	if result.ModifiedCount < 1 {
+		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+	}
+	return nil
+}
+
 func UpdateFriendsByUserId(userId int64, friendId int64) (err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
@@ -292,8 +340,11 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 		}
 	}
 
+	// sort
+	sort := bson.D{{"basedata.isonline", -1}, {"basedata.offlinetime", -1}}
+
 	c = []dto.UserBaseData{}
-	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(limit))
+	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetSort(sort), options.Find().SetLimit(limit))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
@@ -303,7 +354,7 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 	return
 }
 
-// AddApplied 添加申请
+// AddApplied 添加申请 保证 列表中没有userId == userId 以及 status 为 申请0、被申请1
 func AddApplied(userId int64, item *dto.Applied) (err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
