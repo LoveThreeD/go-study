@@ -18,14 +18,14 @@ func Login(c *gin.Context) {
 	account := entity.AccountData{}
 	if err := c.Bind(&account); err != nil {
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFailedWithData(c, "登录失败")
 		return
 	}
 	// get flag
 	token, err := service.Login(&account)
 	if err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFailed(c)
+		response.ResFailedWithData(c, "登录失败")
 		return
 	}
 	response.ResSuccessWithData(c, response.OK.WithData(token))
@@ -38,7 +38,7 @@ func LogOut(c *gin.Context) {
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFailedWithData(c, "登出失败")
 		return
 	}
 
@@ -46,7 +46,7 @@ func LogOut(c *gin.Context) {
 	err = service.LoginOut(int64(userID))
 	if err != nil {
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFailedWithData(c, "登出失败")
 		return
 	}
 

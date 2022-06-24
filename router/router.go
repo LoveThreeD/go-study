@@ -14,14 +14,6 @@ func InitRouter(router *gin.Engine) {
 		middleware.AllowPathPrefixSkipper("/login", "/register"),
 	))*/
 
-	user := router.Group("/user")
-	{
-		// 获取信息
-		user.GET("", api.GetUserByUserID)
-		// 进入我的家园，设置昵称,设置其它
-		user.POST("/init", api.UserInit)
-	}
-
 	level := router.Group("/level")
 	{
 		// 进入关卡

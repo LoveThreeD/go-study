@@ -38,8 +38,8 @@ func SelectUserByUserId(userId int64) (c *dto.UserCache, err error) {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	c = &dto.UserCache{}
-	c.NickName = item.BaseData.NickName
-	c.AvatarUrl = item.BaseData.AvatarURL
+	c.NickName = item.NickName
+	c.AvatarUrl = item.AvatarURL
 	c.IsOnline = 1
 	return
 }

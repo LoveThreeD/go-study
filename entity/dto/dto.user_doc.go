@@ -1,9 +1,7 @@
 package dto
 
-import "sTest/entity"
-
 type UserBaseData struct {
-	BaseData entity.BaseData
+	//BaseData entity.BaseData
 	UserId   int64
 	Age      int
 	Country  string
