@@ -31,8 +31,7 @@ func SelectUserByUserId(userId int64) (c *dto.UserCache, err error) {
 		return nil, err
 	}
 	filter := bson.M{
-		"userid": userId,
-		//"basedata": 1,
+		mongo_key.BaseUserId: userId,
 	}
 	item := &dto.UserBaseData{}
 	if err = collection.FindOne(context.TODO(), filter).Decode(item); err != nil {
