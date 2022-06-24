@@ -59,7 +59,7 @@ func SelectUserByUserIdAll(userId int) (c *dto.UserBaseData, err error) {
 	return
 }
 
-func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []dto.UserBaseData, err error) {
+func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRecommend, err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
@@ -69,7 +69,8 @@ func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []dto.UserBa
 	}
 	// sort
 	sort := bson.D{{mongo_key.BaseIsOnline, -1}, {mongo_key.BaseOfflineTime, -1}}
-	c = []dto.UserBaseData{}
+	//c = []dto.UserBaseData{}
+	c = []friend_dto.RespFriendRecommend{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetSort(sort))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
@@ -318,7 +319,7 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 }
 
 // SelectFriendByCountryAndIntegral 好友推荐
-func SelectFriendByCountryAndIntegral(country string, integral int, limit int64, diffCountry bool) (c []dto.UserBaseData, err error) {
+func SelectFriendByCountryAndIntegral(country string, integral int, limit int64, diffCountry bool) (c []friend_dto.RespFriendRecommend, err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
@@ -343,7 +344,8 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 		}
 	}
 
-	c = []dto.UserBaseData{}
+	//c = []dto.UserBaseData{}
+	c = []friend_dto.RespFriendRecommend{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(limit))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)

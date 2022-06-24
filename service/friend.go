@@ -20,7 +20,7 @@ const (
 	_applicationListName = "applicationlist"
 )
 
-func SearchUser(search *friend_dto.ReqFriendSearch) (c []dto.UserBaseData, err error) {
+func SearchUser(search *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRecommend, err error) {
 	users, err := document.SelectUserByNickName(search)
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgFailed)
@@ -157,7 +157,7 @@ func DeleteFriendList(friend *friend_dto.ReqFriendAdd) (err error) {
 }
 
 // GetRecommendFriends  推荐好友, 1.自己国家 2.积分大于自己  3.每次5个,不足补充其它国家的
-func GetRecommendFriends(req *friend_dto.ReqRecommend) (f []dto.UserBaseData, err error) {
+func GetRecommendFriends(req *friend_dto.ReqRecommend) (f []friend_dto.RespFriendRecommend, err error) {
 
 	const recommendNumber = 5
 
