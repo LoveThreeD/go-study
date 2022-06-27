@@ -21,6 +21,8 @@ var (
 
 	MsgFailed        = "处理失败"
 	MsgInitDataError = "初始化数据失败"
+
+	MsgFriendNumberError = "好友数量超出"
 )
 
 var (

@@ -37,6 +37,17 @@ func AddApplicationList(friend *friend_dto.ReqFriendAdd) (err error) {
 	if err = document.UpdateAlreadyAppliedListByUserId(friend.SelfUserId, friend.FriendUserId); err != nil {
 		return errors.Wrap(err, response.MsgFailed)
 	}*/
+	selfData, err := document.SelectUserByUserIdAll(int(friend.SelfUserId))
+	if err != nil {
+		return err
+	}
+	friendData, err := document.SelectUserByUserIdAll(int(friend.FriendUserId))
+	if err != nil {
+		return err
+	}
+	if len(selfData.Friends)+1 > 30 && len(friendData.Friends)+1 > 30 {
+		return errors.Wrap(errors.New(response.MsgFriendNumberError), response.MsgFriendNumberError)
+	}
 
 	item := dto.Applied{
 		UserId: friend.FriendUserId,
