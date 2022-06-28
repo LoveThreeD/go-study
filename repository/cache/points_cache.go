@@ -3,7 +3,12 @@ package cache
 import (
 	"github.com/garyburd/redigo/redis"
 	r "sTest/pkg/redis"
-	"sTest/service"
+	"strconv"
+	"time"
+)
+
+const (
+	LeaderBoardName = "ranking"
 )
 
 // ExpireDelCache 过期删除缓存
@@ -23,7 +28,7 @@ func ExpireDelCache(key string) (err error) {
 func AddPoints(key string, points int) error {
 	conn := r.Pool.Get()
 	defer conn.Close()
-	if _, err := conn.Do("zincrby", service.GetPointsKey(), points, key); err != nil {
+	if _, err := conn.Do("zincrby", getPointsKey(), points, key); err != nil {
 		return err
 	}
 	return nil
@@ -35,7 +40,7 @@ func AddPoints(key string, points int) error {
 func GetRanks(count int) ([]string, error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
-	rels, err := redis.Strings(conn.Do("zrevrangebyscore", service.GetPointsKey(), "+inf", "-inf", "WITHSCORES", "limit", 0, count))
+	rels, err := redis.Strings(conn.Do("zrevrangebyscore", getPointsKey(), "+inf", "-inf", "WITHSCORES", "limit", 0, count))
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +54,7 @@ func GetRanks(count int) ([]string, error) {
 func GetOneRanks(userId int) (int, error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
-	number, err := redis.Int(conn.Do("ZREVRANK", service.GetPointsKey(), userId))
+	number, err := redis.Int(conn.Do("ZREVRANK", getPointsKey(), userId))
 	if err != nil {
 		switch err.Error() {
 		case "redigo: nil returned":
@@ -67,7 +72,7 @@ func GetOneRanks(userId int) (int, error) {
 func GetOnePoints(userId int) (int, error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
-	score, err := redis.Int(conn.Do("ZSCORE", service.GetPointsKey(), userId))
+	score, err := redis.Int(conn.Do("ZSCORE", getPointsKey(), userId))
 	if err != nil {
 		switch err.Error() {
 		case "redigo: nil returned":
@@ -77,4 +82,20 @@ func GetOnePoints(userId int) (int, error) {
 		}
 	}
 	return score, nil
+}
+
+/*
+	获取上月的缓存中的积分key值
+*/
+func GetLastPointsKey() string {
+	month := time.Now().Month()
+	return LeaderBoardName + ":" + strconv.Itoa(int(month-1))
+}
+
+/*
+	获取本月要存储在缓存中的积分key值
+*/
+func getPointsKey() string {
+	month := time.Now().Month()
+	return LeaderBoardName + ":" + strconv.Itoa(int(month))
 }

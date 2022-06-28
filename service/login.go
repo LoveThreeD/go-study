@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func Login(account *entity.AccountData) (token string, err error) {
+func Login(account *entity.AccountData) (string, error) {
 	// 检查用户账户密码
 	userId, err := data.CheckUserByAccountAndPass(account.Account, account.Passwd)
 	if err != nil {
@@ -34,26 +34,26 @@ func Login(account *entity.AccountData) (token string, err error) {
 	}
 
 	// 生成token
-	token, err = auth.GenerateToken(int(userId))
+	token, err := auth.GenerateToken(int(userId))
 	if err != nil {
 		return "", err
 	}
-	return
+	return token, nil
 }
 
-func LoginOut(userId int64) (err error) {
+func LoginOut(userId int64) error {
 	if userId < 1 {
 		return errors.New(response.MsgParamsError)
 	}
 	offlineTime := time.Now().Unix()
 	// 改变mongo中用户的在线状态
-	if err = document.UpdateTwoElementByUserId(userId, mongo_key.BaseIsOnline, mongo_key.BaseOfflineTime, false, offlineTime); err != nil {
+	if err := document.UpdateTwoElementByUserId(userId, mongo_key.BaseIsOnline, mongo_key.BaseOfflineTime, false, offlineTime); err != nil {
 		return errors.Wrap(err, response.MsgFailed)
 	}
 	return nil
 }
 
-func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
+func Register(param *login_logout.LoginReq) (*entity.AccountData, error) {
 	userId, err := InitUserGameData()
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgInitDataError)

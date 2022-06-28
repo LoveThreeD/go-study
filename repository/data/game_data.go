@@ -10,7 +10,7 @@ import (
 	更新游戏数据
 */
 func UpdateGameData(bytes []byte) error {
-	query := "update g_game_data set game_data = ?"
+	query := "UPDATE g_game_data SET game_data = ?"
 	result, err := m.DB.Exec(query, bytes)
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func UpdateGameData(bytes []byte) error {
 	插入游戏数据
 */
 func InsertGameData(bytes []byte) (int64, error) {
-	insertGameDataSQL := "insert into g_game_data(game_data) values(?)"
+	insertGameDataSQL := "INSERT INTO g_game_data(game_data) VALUES(?)"
 	result, err := m.DB.Exec(insertGameDataSQL, bytes)
 	if err != nil {
 		return 0, err
@@ -45,7 +45,7 @@ func InsertGameData(bytes []byte) (int64, error) {
 	获取用户的gameData数据
 */
 func GetGameData(userId int) (*entity.GameData, error) {
-	sqlStr := "select user_id ,game_data from g_game_data where user_id = ?"
+	sqlStr := "SELECT user_id ,game_data FROM g_game_data WHERE user_id = ?"
 	gameData := &entity.GameData{}
 	if err := m.DB.Get(gameData, sqlStr, userId); err != nil {
 		return nil, err

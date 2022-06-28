@@ -43,7 +43,7 @@ func SelectUser(userId int) (c *dto.UserBaseData, err error) {
 	return
 }
 
-func SelectUserByNickname(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRecommend, err error) {
+func SelectUserByNickname(reqParams *friend_dto.ReqFriendSearch) ([]*friend_dto.RespFriendRecommend, error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func SelectUserByNickname(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto
 	// sort
 	sort := bson.M{mongo_key.BaseIsOnline: -1, mongo_key.BaseOfflineTime: -1}
 
-	c = []friend_dto.RespFriendRecommend{}
+	c := []*friend_dto.RespFriendRecommend{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetSort(sort))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
@@ -62,10 +62,10 @@ func SelectUserByNickname(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto
 	if err = cursor.All(context.TODO(), &c); err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
-	return
+	return c, nil
 }
 
-func IncrIntegral(userId int, integral int) (err error) {
+func AddPoints(userId int, integral int) (err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return
@@ -303,7 +303,7 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 }
 
 // SelectFriendByCountryAndIntegral 好友推荐
-func SelectFriendByCountryAndIntegral(country string, integral int, limit int64, diffCountry bool) (c []friend_dto.RespFriendRecommend, err error) {
+func SelectFriendByCountryAndIntegral(country string, integral int, limit int64, diffCountry bool) ([]*friend_dto.RespFriendRecommend, error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
@@ -328,7 +328,7 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 		}
 	}
 
-	c = []friend_dto.RespFriendRecommend{}
+	c := []*friend_dto.RespFriendRecommend{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(limit))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
@@ -336,7 +336,7 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 	if err = cursor.All(context.TODO(), &c); err != nil {
 		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
-	return
+	return c, nil
 }
 
 // AddApplied 添加申请 保证 列表中没有userId == userId 以及 status 为 申请0、被申请1

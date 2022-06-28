@@ -37,7 +37,7 @@ func EnterLevel(c *gin.Context) {
 	response.ResSuccess(c, gameData)
 }
 
-func MissionAccomplished(c *gin.Context) {
+func FinishTask(c *gin.Context) {
 	// userID 任务ID
 	userIDStr := c.PostForm("userID")
 	taskIDStr := c.PostForm("taskID")
@@ -54,7 +54,7 @@ func MissionAccomplished(c *gin.Context) {
 		return
 	}
 
-	if err := service.MissionAccomplished(userID, taskID); err != nil {
+	if err := service.FinishTask(userID, taskID); err != nil {
 		logger.Error(err)
 		response.ResFail(c, http.StatusFailedDependency, "")
 		return
@@ -62,7 +62,7 @@ func MissionAccomplished(c *gin.Context) {
 	response.ResSuccess(c, true)
 }
 
-func Leave(c *gin.Context) {
+func FinishLevel(c *gin.Context) {
 	// userID 任务ID
 	userIDStr := c.PostForm("userID")
 	levelIDStr := c.PostForm("levelID")
@@ -79,7 +79,7 @@ func Leave(c *gin.Context) {
 		return
 	}
 
-	if err := service.Leave(userID, levelID); err != nil {
+	if err := service.FinishLevel(userID, levelID); err != nil {
 		logger.Error(err)
 		response.ResFail(c, http.StatusPreconditionFailed, "")
 		return

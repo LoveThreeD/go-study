@@ -23,9 +23,9 @@ func InitRouter(router *gin.Engine) {
 		// 进入关卡
 		level.GET("enterLevel", api.EnterLevel)
 		// 完成任务
-		level.PUT("missionAccomplished", api.MissionAccomplished)
+		level.PUT("missionAccomplished", api.FinishTask)
 		// 完成关卡
-		level.PUT("leave", api.Leave)
+		level.PUT("leave", api.FinishLevel)
 	}
 
 	friend := router.Group("/friend")

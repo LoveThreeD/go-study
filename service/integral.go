@@ -3,23 +3,16 @@ package service
 /* 积分服务*/
 
 import (
-	"fmt"
 	"sTest/entity"
 	r "sTest/pkg/redis"
 	"sTest/repository/cache"
 	"strconv"
-	"time"
-)
-
-const (
-	LeaderBoardName = "ranking"
 )
 
 /*
   增加积分
 */
-
-func AddIntegral(key string, points int) (err error) {
+func addPoints(key string, points int) error {
 	return cache.AddPoints(key, points)
 }
 
@@ -58,7 +51,7 @@ func GetRanking(count int) ([]*entity.LeaderBoardData, error) {
 	return ranking, nil
 }
 
-func GetSelfIntegral(userId int) (*entity.LeaderBoardData, error) {
+func GetPointsById(userId int) (*entity.LeaderBoardData, error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
 	// 获取用户数据
@@ -84,20 +77,4 @@ func GetSelfIntegral(userId int) (*entity.LeaderBoardData, error) {
 		AvatarURL: userCache.AvatarUrl,
 	}
 	return ranking, nil
-}
-
-/*
-	获取上月的缓存中的积分key值
-*/
-func GetLastPointsKey() string {
-	month := time.Now().Month()
-	return fmt.Sprintf("%s:%d", LeaderBoardName, month-1)
-}
-
-/*
-	获取本月要存储在缓存中的积分key值
-*/
-func GetPointsKey() string {
-	month := time.Now().Month()
-	return fmt.Sprintf("%s:%d", LeaderBoardName, month)
 }

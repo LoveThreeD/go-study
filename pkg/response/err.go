@@ -25,6 +25,7 @@ var (
 	MsgTaskNotFoundError  = "the task is not in the task list"
 	MsgTaskRepeatError    = "the task has been completed, no need to repeat it"
 	MsgLevelChooseError   = "level choose error"
+	MsgLevelNotFoundError = "the task is not in the task list"
 	MsgLevelNotSuccess    = "level has not been completed"
 )
 

@@ -21,7 +21,7 @@ func GetRanking(c *gin.Context) {
 		return
 	}
 
-	selfData, err := service.GetSelfIntegral(userID)
+	selfData, err := service.GetPointsById(userID)
 	if err != nil {
 		logger.Error(err)
 		response.ResFail(c, http.StatusFailedDependency, "")

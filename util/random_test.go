@@ -6,12 +6,12 @@ import (
 )
 
 func TestApproach8(t *testing.T) {
-	fmt.Println(RandNChar(2))
-	fmt.Println(RandNChar(2))
-	fmt.Println(RandNChar(2))
+	fmt.Println((2))
+	fmt.Println(RandNCharAccount(2))
+	fmt.Println(RandNCharAccount(2))
 }
 func BenchmarkApproach8(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = RandNChar(10)
+		_ = RandNCharAccount(10)
 	}
 }
