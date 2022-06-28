@@ -9,7 +9,7 @@ import (
 )
 
 func SearchUser(search *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRecommend, err error) {
-	users, err := document.SelectUserByNickName(search)
+	users, err := document.SelectUserByNickname(search)
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgFailed)
 	}
@@ -18,11 +18,11 @@ func SearchUser(search *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRe
 
 // AddApplicationList  添加到申请列表 And 添加到已申请列表
 func AddApplicationList(friend *friend_dto.ReqFriendAdd) (err error) {
-	selfData, err := document.SelectUserByUserIdAll(int(friend.SelfUserId))
+	selfData, err := document.SelectUser(int(friend.SelfUserId))
 	if err != nil {
 		return err
 	}
-	friendData, err := document.SelectUserByUserIdAll(int(friend.FriendUserId))
+	friendData, err := document.SelectUser(int(friend.FriendUserId))
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func GetRecommendFriends(req *friend_dto.ReqRecommend) (f []friend_dto.RespFrien
 	const recommendNumber = 5
 
 	// 查询自身
-	user, err := document.SelectUserByUserIdAll(int(req.UserId))
+	user, err := document.SelectUser(int(req.UserId))
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgFailed)
 	}

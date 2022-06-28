@@ -25,26 +25,10 @@ func CreateUser(item *dto.UserBaseData) (err error) {
 	return
 }
 
-func SelectUserByUserId(userId int64) (c *dto.UserCache, err error) {
-	collection, err := getUserDocumentConnect()
-	if err != nil {
-		return nil, err
-	}
-	filter := bson.M{
-		mongo_key.BaseUserId: userId,
-	}
-	item := &dto.UserBaseData{}
-	if err = collection.FindOne(context.TODO(), filter).Decode(item); err != nil {
-		return nil, errors.Wrap(err, response.MsgMongoSelectUserError)
-	}
-	c = &dto.UserCache{}
-	c.NickName = item.NickName
-	c.AvatarUrl = item.AvatarURL
-	c.IsOnline = 1
-	return
-}
-
-func SelectUserByUserIdAll(userId int) (c *dto.UserBaseData, err error) {
+/*
+	从mongo中获取某位用户的全部数据
+*/
+func SelectUser(userId int) (c *dto.UserBaseData, err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
@@ -59,7 +43,7 @@ func SelectUserByUserIdAll(userId int) (c *dto.UserBaseData, err error) {
 	return
 }
 
-func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRecommend, err error) {
+func SelectUserByNickname(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRecommend, err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
@@ -68,7 +52,7 @@ func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto
 		mongo_key.BaseNickName: reqParams.NickName,
 	}
 	// sort
-	sort := bson.D{{mongo_key.BaseIsOnline, -1}, {mongo_key.BaseOfflineTime, -1}}
+	sort := bson.M{mongo_key.BaseIsOnline: -1, mongo_key.BaseOfflineTime: -1}
 
 	c = []friend_dto.RespFriendRecommend{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetSort(sort))
@@ -87,7 +71,7 @@ func IncrIntegral(userId int, integral int) (err error) {
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$inc": bson.M{
@@ -108,7 +92,7 @@ func UpdateApplicationListByUserId(userId int64, applicationId int64) (err error
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$push": bson.M{
@@ -127,7 +111,7 @@ func UpdateAlreadyAppliedListByUserId(userId int64, alreadyApplied int64) (err e
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$push": bson.M{
@@ -146,7 +130,7 @@ func UpdateNoPassListByUserId(userId int64, noPass int64) (err error) {
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$push": bson.M{
@@ -166,7 +150,7 @@ func UpdateAddElementByUserId(arrayName string, userId int64, noPass int64) (err
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$push": bson.M{
@@ -186,7 +170,7 @@ func DeleteElementByUserId(arrayName string, userId int64, friendId int64) (err 
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$pull": bson.M{
@@ -210,7 +194,7 @@ func UpdateElementByUserId(itemName string, userId int64, v interface{}) (err er
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$set": bson.M{
@@ -233,7 +217,7 @@ func UpdateTwoElementByUserId(userId int64, itemName1, itemName2 string, v1, v2 
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$set": bson.M{
@@ -277,7 +261,7 @@ func DeleteApplicationList(userId int64, friendId int64) (err error) {
 		return
 	}
 	filter := bson.M{
-		"userid": userId,
+		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
 		"$pull": bson.M{
