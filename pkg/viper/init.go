@@ -59,10 +59,10 @@ type Config struct {
 }
 
 func init() {
-	viper.SetConfigName("level") //找寻文件的名字
+	viper.SetConfigName("level") // 找寻文件的名字
 	viper.SetConfigType("json")  // 找寻文件的类型
-	viper.AddConfigPath("conf")  //.代表当前文件夹找寻，可以多个目录找寻，生成数组
-	//读取配置文件
+	viper.AddConfigPath("conf")  // 代表当前文件夹找寻，可以多个目录找寻，生成数组
+	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
 		if v, ok := err.(viper.ConfigFileNotFoundError); ok {
 			logger.Info(v)
@@ -70,7 +70,7 @@ func init() {
 			logger.Fatal(err)
 		}
 	}
-	//将配置文件反序列化为结构体
+	// 将配置文件反序列化为结构体
 	LevelConf = LevelConfig{}
 	if err := viper.Unmarshal(&LevelConf); err != nil {
 		logger.Fatal(err)
@@ -79,8 +79,8 @@ func init() {
 }
 
 func init() {
-	viper.SetConfigName("task") //找寻文件的名字
-	//读取配置文件
+	viper.SetConfigName("task") // 找寻文件的名字
+	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
 		if v, ok := err.(viper.ConfigFileNotFoundError); ok {
 			logger.Info(v)
@@ -88,7 +88,7 @@ func init() {
 			logger.Fatal(err)
 		}
 	}
-	//将配置文件反序列化为结构体
+	// 将配置文件反序列化为结构体
 	TaskConf = TaskConfig{}
 	if err := viper.Unmarshal(&TaskConf); err != nil {
 		logger.Fatal(err)
@@ -96,9 +96,9 @@ func init() {
 }
 
 func init() {
-	viper.SetConfigName("conf") //找寻文件的名字
+	viper.SetConfigName("conf") // 找寻文件的名字
 	viper.SetConfigType("toml") // 找寻文件的类型
-	//读取配置文件
+	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
 		if v, ok := err.(viper.ConfigFileNotFoundError); ok {
 			logger.Info(v)
@@ -106,7 +106,7 @@ func init() {
 			logger.Fatal(err)
 		}
 	}
-	//将配置文件反序列化为结构体
+	// 将配置文件反序列化为结构体
 	Conf = Config{}
 	if err := viper.Unmarshal(&Conf); err != nil {
 		logger.Fatal(err)

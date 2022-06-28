@@ -4,6 +4,7 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"net/http"
 	"sTest/entity"
 	"sTest/entity/login_logout"
 	"sTest/pkg/response"
@@ -18,17 +19,17 @@ func Login(c *gin.Context) {
 	account := entity.AccountData{}
 	if err := c.Bind(&account); err != nil {
 		logger.Error(err)
-		response.ResFailedWithData(c, "登录失败")
+		response.ResFail(c, http.StatusPreconditionFailed, "")
 		return
 	}
 	// get flag
 	token, err := service.Login(&account)
 	if err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFailedWithData(c, "登录失败")
+		response.ResFail(c, http.StatusForbidden, "")
 		return
 	}
-	response.ResSuccessWithData(c, response.OK.WithData(token))
+	response.ResSuccess(c, token)
 }
 
 func LogOut(c *gin.Context) {
@@ -38,7 +39,7 @@ func LogOut(c *gin.Context) {
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
-		response.ResFailedWithData(c, "登出失败")
+		response.ResFail(c, http.StatusPreconditionFailed, "")
 		return
 	}
 
@@ -46,7 +47,7 @@ func LogOut(c *gin.Context) {
 	err = service.LoginOut(int64(userID))
 	if err != nil {
 		logger.Error(err)
-		response.ResFailedWithData(c, "登出失败")
+		response.ResFail(c, http.StatusNotAcceptable, "")
 		return
 	}
 
@@ -60,11 +61,10 @@ func LogOut(c *gin.Context) {
 // 密码是4位.可以是固定的
 func Register(c *gin.Context) {
 	// get query params
-	//equipmentID := c.PostForm("equipmentId")
 	var param login_logout.LoginReq
 	if err := c.Bind(&param); err != nil {
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFail(c, http.StatusPreconditionFailed, "")
 		return
 	}
 
@@ -74,15 +74,14 @@ func Register(c *gin.Context) {
 	if equipmentID == "" || nickName == "" {
 		err := errors.New("接收参数不正确,空参数")
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFail(c, http.StatusPreconditionFailed, "")
 		return
 	}
 
-	// init t_account_data and t_base_data
 	accountData, err := service.Register(&param)
 	if err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFailed(c)
+		response.ResFail(c, http.StatusNotAcceptable, "")
 		return
 	}
 

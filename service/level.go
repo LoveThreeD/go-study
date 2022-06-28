@@ -77,8 +77,6 @@ func MissionAccomplished(userID, taskID int) (err error) {
 	}
 
 	for _, val := range gameData.LevelData.FinishTask {
-		logger.Info(val)
-		logger.Info(taskID)
 		if int(val) == taskID {
 			err = errors.New("任务已完成,无需重复完成")
 			logger.Error(err)

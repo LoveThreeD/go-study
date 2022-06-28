@@ -28,18 +28,12 @@ func Login(account *entity.AccountData) (token string, err error) {
 		return "", err
 	}
 
-	/*updateUserStatusSQL := "update t_base_data set is_online = 1 where user_id = ?"
-	if _, err := m.DB.Exec(updateUserStatusSQL, userID); err != nil {
-		logger.Error(err)
-		return "", err
-	}*/
-
-	//改变mongo中用户的在线状态
+	// 改变mongo中用户的在线状态
 	if err = document.UpdateElementByUserId(mongo_key.BaseIsOnline, userID, true); err != nil {
 		return "", errors.Wrap(err, response.MsgFailed)
 	}
 
-	//检查缓存
+	// 检查缓存
 	if _, err := cache.GetUserCache(int(userID)); err != nil {
 		return "", err
 	}
@@ -57,7 +51,7 @@ func LoginOut(userId int64) (err error) {
 		return errors.New("非法参数")
 	}
 	offlineTime := time.Now().Unix()
-	//改变mongo中用户的在线状态
+	// 改变mongo中用户的在线状态
 	if err = document.UpdateTwoElementByUserId(userId, mongo_key.BaseIsOnline, mongo_key.BaseOfflineTime, false, offlineTime); err != nil {
 		return errors.Wrap(err, response.MsgFailed)
 	}
@@ -81,12 +75,8 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 		Age:         param.Age,
 		Country:     param.Country,
 		Integral:    0,
-		/*ApplicationList: []int64{},
-		AlreadyAppliedList: []int64{},
-		NoPassList: []int64{},
-		NoPassRecord: []int64{},*/
-		Friends: []int64{},
-		Applied: []dto.Applied{},
+		Friends:     []int64{},
+		Applied:     []dto.Applied{},
 	}
 
 	if err = document.CreateUser(&item); err != nil {
@@ -100,7 +90,6 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 	// get access
 	account := twoChar + strconv.Itoa(int(userId))
 
-	// baseDataSql := "insert into t_base_data(user_id,nickname,avatarURL,score,isOnline,offlineTime) values(?,?,?,?,?,?)"
 	sqlStr := "insert into t_account_data(user_id,passwd,equipment_id,account) values(?,?,?,?)"
 	if _, err = m.DB.Exec(sqlStr, userId, passwd, param.EquipmentID, account); err != nil {
 		logger.Error(err)

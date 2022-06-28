@@ -13,6 +13,10 @@ func InitRouter(router *gin.Engine) {
 	/*router.Use(middleware.UserAuthMiddleware(
 		middleware.AllowPathPrefixSkipper("/login", "/register"),
 	))*/
+	user := router.Group("/user")
+	{
+		user.PUT("", api.UpdateUserBaseMessage)
+	}
 
 	level := router.Group("/level")
 	{

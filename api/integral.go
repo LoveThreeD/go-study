@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"sTest/pkg/response"
 	"sTest/service"
 	"strconv"
@@ -16,21 +17,21 @@ func GetRanking(c *gin.Context) {
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFail(c, http.StatusPreconditionFailed, "")
 		return
 	}
 
 	selfData, err := service.GetSelfIntegral(userID)
 	if err != nil {
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFail(c, http.StatusNotAcceptable, "")
 		return
 	}
 
 	data, err := service.GetRanking(50)
 	if err != nil {
 		logger.Error(err)
-		response.ResFailed(c)
+		response.ResFail(c, http.StatusNotAcceptable, "")
 		return
 	}
 

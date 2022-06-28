@@ -8,18 +8,6 @@ import (
 	"sTest/repository/document"
 )
 
-const (
-	/*我不给通过的列表名*/
-	_noPassName = "nopass"
-	/*我申请后未通过的列表名*/
-	_noPassRecordName = "nopassrecord"
-
-	/*已申请列表(我申请别人的)*/
-	_alreadyAppliedName = "alreadyappliedlist"
-	/*被人申请我的申请列表*/
-	_applicationListName = "applicationlist"
-)
-
 func SearchUser(search *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRecommend, err error) {
 	users, err := document.SelectUserByNickName(search)
 	if err != nil {
@@ -30,13 +18,6 @@ func SearchUser(search *friend_dto.ReqFriendSearch) (c []friend_dto.RespFriendRe
 
 // AddApplicationList  添加到申请列表 And 添加到已申请列表
 func AddApplicationList(friend *friend_dto.ReqFriendAdd) (err error) {
-	/*if err = document.UpdateApplicationListByUserId(friend.FriendUserId, friend.SelfUserId); err != nil {
-		return errors.Wrap(err, response.MsgFailed)
-	}
-
-	if err = document.UpdateAlreadyAppliedListByUserId(friend.SelfUserId, friend.FriendUserId); err != nil {
-		return errors.Wrap(err, response.MsgFailed)
-	}*/
 	selfData, err := document.SelectUserByUserIdAll(int(friend.SelfUserId))
 	if err != nil {
 		return err
@@ -71,21 +52,6 @@ func AddApplicationList(friend *friend_dto.ReqFriendAdd) (err error) {
 // AddFriendList  添加到好友列表
 func AddFriendList(friend *friend_dto.ReqFriendAdd) (err error) {
 	// XXX 该操作应该是原子的,后续优化
-	/*// delete application list friendId      删除已申请列表中的申请Id
-	if err = document.DeleteElementByUserId(_alreadyAppliedName,friend.SelfUserId, friend.FriendUserId); err != nil {
-		return err
-	}
-
-	// add friendId in friends  添加申请Id到好友列表
-	if err = document.UpdateFriendsByUserId(friend.SelfUserId, friend.FriendUserId); err != nil {
-		return err
-	}
-
-	// add self id in application user 添加自己到申请人的好友列表
-	if err = document.UpdateFriendsByUserId(friend.FriendUserId, friend.SelfUserId); err != nil {
-		return err
-	}*/
-
 	item := dto.Applied{
 		UserId: friend.FriendUserId,
 		Status: dto.Agree,
@@ -118,21 +84,6 @@ func AddFriendList(friend *friend_dto.ReqFriendAdd) (err error) {
 // NotPass 未通过申请处理  主体是被申请人
 func NotPass(friend *friend_dto.ReqFriendAdd) (err error) {
 	// XXX 该操作应该是原子的,后续优化
-
-	/*// delete application list
-	if err = document.DeleteApplicationList(friend.SelfUserId, friend.FriendUserId); err != nil {
-		return err
-	}
-	// add noPass list
-	if err = document.UpdateAddElementByUserId(_noPassName,friend.SelfUserId, friend.FriendUserId); err != nil {
-		return err
-	}
-
-	// add noPassRecord list
-	if err = document.UpdateAddElementByUserId(_noPassRecordName,friend.SelfUserId, friend.FriendUserId); err != nil {
-		return err
-	}*/
-
 	item := dto.Applied{
 		UserId: friend.FriendUserId,
 		Status: dto.NoPass,

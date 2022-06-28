@@ -23,7 +23,8 @@ const (
 */
 
 // AddIntegral
-// key userAccount:avatar url
+//
+
 func AddIntegral(key string, integral int) (err error) {
 	conn := r.Pool.Get()
 	defer conn.Close()

@@ -68,20 +68,8 @@ func ResSuccess(c *gin.Context, v interface{}) {
 	ResJSON(c, http.StatusOK, OK.WithData(v))
 }
 
-func ResSuccessWithData(c *gin.Context, v interface{}) {
-	ResJSON(c, http.StatusOK, v)
-}
-
-func ResFailedWithData(c *gin.Context, v interface{}) {
-	ResJSON(c, http.StatusOK, Err.WithData(v))
-}
-
-func ResultFailed(c *gin.Context, v interface{}) {
-	ResJSON(c, http.StatusOK, v)
-}
-
-func ResFailed(c *gin.Context) {
-	ResJSON(c, http.StatusOK, Err)
+func ResFail(c *gin.Context, status int, v interface{}) {
+	ResJSON(c, http.StatusOK, response(status, http.StatusText(status)).WithData(v))
 }
 
 // 构造函数

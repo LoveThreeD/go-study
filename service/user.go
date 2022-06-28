@@ -3,7 +3,10 @@ package service
 import (
 	"github.com/asim/go-micro/v3/logger"
 	"sTest/entity"
+	"sTest/entity/user"
 	m "sTest/pkg/mysql"
+	"sTest/repository/document"
+	"sTest/repository/document/mongo_key"
 )
 
 func GetUserByID(userID int) (e *entity.BaseData, err error) {
@@ -18,23 +21,12 @@ func GetUserByID(userID int) (e *entity.BaseData, err error) {
 	return e, nil
 }
 
-func UserInit(in *entity.BaseData) (out *entity.BaseData, err error) {
-	selectSQL := "select exists(select user_id from t_account_data where user_id = ? limit 1)"
-	var ok bool
-	if err = m.DB.Get(&ok, selectSQL, in.UserID); err != nil {
-		logger.Error(err)
-		return nil, err
+func UserInit(in *user.ReqUserBase) (err error) {
+
+	// 修改昵称和国家
+	if err = document.UpdateTwoElementByUserId(in.UserId, mongo_key.BaseCountry, mongo_key.BaseNickName, in.Country, in.NickName); err != nil {
+		return err
 	}
 
-	in.AvatarURL = "default.avatar.URL"
-	in.Score = 0
-	in.IsOnline = true
-	in.OfflineTime = -1
-
-	insertSQL := "insert into t_base_data(user_id,nickname,avatar_url,score,is_online,offline_time) values(?,?,?,?,?,?)"
-	if _, err := m.DB.Exec(insertSQL, in.UserID, in.NickName, in.AvatarURL, in.Score, in.IsOnline, in.OfflineTime); err != nil {
-		logger.Error(err)
-		return nil, err
-	}
-	return in, nil
+	return nil
 }
