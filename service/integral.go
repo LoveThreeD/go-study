@@ -1,6 +1,6 @@
 package service
 
-/*积分服务*/
+/* 积分服务*/
 
 import (
 	"fmt"
@@ -17,13 +17,11 @@ const (
 	LeaderBoardName = "ranking"
 )
 
-/*增加积分
+/*
+  增加积分
   1.add task integral
   2.add level integral
 */
-
-// AddIntegral
-//
 
 func AddIntegral(key string, integral int) (err error) {
 	conn := r.Pool.Get()

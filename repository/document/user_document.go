@@ -69,7 +69,7 @@ func SelectUserByNickName(reqParams *friend_dto.ReqFriendSearch) (c []friend_dto
 	}
 	// sort
 	sort := bson.D{{mongo_key.BaseIsOnline, -1}, {mongo_key.BaseOfflineTime, -1}}
-	//c = []dto.UserBaseData{}
+
 	c = []friend_dto.RespFriendRecommend{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetSort(sort))
 	if err != nil {
@@ -344,7 +344,6 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 		}
 	}
 
-	//c = []dto.UserBaseData{}
 	c = []friend_dto.RespFriendRecommend{}
 	cursor, err := collection.Find(context.TODO(), filter, options.Find().SetLimit(limit))
 	if err != nil {

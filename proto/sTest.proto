@@ -4,57 +4,8 @@ package sTest;
 
 option go_package = "./proto;sTest";
 
-service STest {
-	/*rpc Call(Request) returns (Response) {}
-	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
-	rpc PingPong(stream Ping) returns (stream Pong) {}*/
-}
+service STest {}
 
-/*// 账号数据
-message AccountData {
-	int64 userId = 1;
-	string account = 2;
-	string passwd = 3 ;
-	string equipmentId = 4; // 设备id
-}
-// ⽤户基础数据
-message BaseData {
-	int64 userId = 1; // ⽤户id
-	string nickname = 2; // ⽤户昵称
-	string avatarURL = 3; // 第三⽅头像链接
-	uint64 score = 4; // 积分
-	bool isOnline = 6; // 是否在线
-	int64 offlineTime = 7; // 离线时间
-}
-// ⽤户的游戏数据 （还有其他数据，数据⽐较⼤）
-message GameData {
-	uint32 curLevel = 1; // 当前关卡id
-	repeated uint32 finishTask = 2; // 当前关卡完成任务id
-	map<uint32,int32> warehouse = 3; // 物品仓库（购买，未摆放等）key:id,value:count
-	map<uint32,uint32> shopData = 4; // 商店的数据表 map<id,times> id都是已解锁的数据，times为已购买次数
-	map<uint32,bool> terrainData = 5; // 地形总量数据 map<id,bool> 地形id,地形购买后不限次数⽆限使⽤,解锁地形后加⼊此字段中,bool值为是否购买,true表⽰已
-	map<uint32, uint32> community = 7; // 社区数据
-	StatisticsData statistics = 8; // 统计数据
-	GameSetting setting = 10; // 游戏设置
-	MaterialData material = 11; // 货币物资数据
-}
-// 统计类类数据
-message StatisticsData {
-	int64 totalOnlineTime = 1; // 总在线时⻓(下线更新)
-	uint32 totalUseMoney = 2; // 总消耗⾦币
-	uint32 totalUseStar = 3; // 总消耗星星
-	uint32 totalExposureHeat = 4; // 总曝光度热度 （消耗积分增加曝光度，每次随机⼀个热度)
-}
-// 游戏配置
-message GameSetting {
-	uint32 switch = 1; // 位标志 1:连续合成 2:重叠合成 3:点击确认
-}
-message MaterialData {
-	int32 money = 1; // ⾦币
-	uint32 star = 2; // 星星
-	map<uint32, uint32> warehouse = 3; // 仓库(场外道具)
-	uint32 exposureMoney = 4; // 曝光货币
-}*/
 
 // 账号数据
 message AccountData {

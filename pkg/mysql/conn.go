@@ -14,7 +14,6 @@ import (
 var DB *sqlx.DB
 
 func init() {
-	//dsn := "root:123456@tcp(192.168.20.132:3306)/test?charset=utf8mb4&parseTime=True"
 	c := viper.Conf.Mysql
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s", c.Username, c.Password, c.Address, c.Port, c.DbName, c.URL)
 	// 也可以使用MustConnect连接不成功就panic

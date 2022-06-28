@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	r "sTest/router"
-	/*定时任务初始化*/
+	/* 定时任务初始化*/
 	_ "sTest/pkg/timing"
 )
 

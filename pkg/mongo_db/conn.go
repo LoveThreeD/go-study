@@ -18,7 +18,6 @@ var Client *mongo.Client
 func init() {
 	var err error
 	c := viper.Conf.Mongo
-	//url := fmt.Sprintf("%s:%d",c.Address,c.Port)
 	url := fmt.Sprintf("mongodb://%s:%d", c.Address, c.Port)
 	ClientOpts = options.Client().ApplyURI(url)
 	Client, err = mongo.Connect(context.TODO(), ClientOpts)
