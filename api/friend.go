@@ -22,7 +22,7 @@ func SearchFriend(c *gin.Context) {
 	users, err := service.SearchUser(&params)
 	if err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 
@@ -41,7 +41,7 @@ func AddApplicationList(c *gin.Context) {
 
 	if err := service.AddApplicationList(&params); err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 	response.ResSuccess(c, "")
@@ -61,7 +61,7 @@ func Ack(c *gin.Context) {
 	if params.Agree == 0 {
 		if err := service.NotPass(&params); err != nil {
 			logger.Errorf("%+v", err)
-			response.ResFail(c, http.StatusNotAcceptable, "")
+			response.ResFail(c, http.StatusFailedDependency, "")
 			return
 		}
 		response.ResSuccess(c, true)
@@ -71,7 +71,7 @@ func Ack(c *gin.Context) {
 	// search user
 	if err := service.AddFriendList(&params); err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 	response.ResSuccess(c, "")
@@ -89,7 +89,7 @@ func DeleteFriend(c *gin.Context) {
 	// search user
 	if err := service.DeleteFriendList(&params); err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 	response.ResSuccess(c, "")
@@ -108,7 +108,7 @@ func RecommendFriend(c *gin.Context) {
 	friends, err := service.GetRecommendFriends(&params)
 	if err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 

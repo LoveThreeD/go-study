@@ -2,31 +2,32 @@ package response
 
 import "net/http"
 
-// 错误码规则:
-// (1) 错误码需为 > 0 的数;
-//
-// (2) 错误码为 5 位数:
-//              ----------------------------------------------------------
-//                  第1位               2、3位                  4、5位
-//              ----------------------------------------------------------
-//                服务级错误码          模块级错误码	         具体错误码
-//              ----------------------------------------------------------
-
 var (
-	MsgConventErr = "类型转换异常"
-	/* mongo学习 */
-	MsgMongoDbConnectionError   = "Mongo数据库连接失败"
-	MsgMongoCollConnectionError = "Mongo文档连接失败"
-	MsgMongoCreateUserError     = "Mongo创建用户失败"
-	MsgMongoSelectUserError     = "Mongo查询用户失败"
-	MsgMongoUpdateUserError     = "Mongo更新用户失败"
+	MsgConventErr = "type conversion fail"
+	/* mongo */
 
-	MsgFailed        = "处理失败"
-	MsgInitDataError = "初始化数据失败"
-	/* 好友 */
-	MsgFriendNumberError = "好友数量超出"
+	MsgMongoDbConnectionError   = "MongoDb connect fail"
+	MsgMongoCollConnectionError = "Mongo document connect fail"
+	MsgMongoCreateUserError     = "Mongo create user fail"
+	MsgMongoSelectUserError     = "Mongo select user fail"
+	MsgMongoUpdateUserError     = "Mongo update user fail"
+	/* 通用*/
+
+	MsgFailed            = "deal fail"
+	MsgParamsError       = "param error"
+	MsgInitDataError     = "init data fail"
+	MsgFriendNumberError = "number of friends fail"
+
+	/* 任务和关卡相关*/
+
+	MsgPreviousError      = "pass the previous level first to continue the challenge"
+	MsgNotSubsequentError = "subsequent levels are not yet open, so stay tuned"
+	MsgTaskNotFoundError  = "the task is not in the task list"
+	MsgTaskRepeatError    = "the task has been completed, no need to repeat it"
+	MsgLevelChooseError   = "level choose error"
+	MsgLevelNotSuccess    = "level has not been completed"
 )
 
 var (
-	OK = response(http.StatusOK, "ok") // 通用成功
+	OK = response(http.StatusOK, http.StatusText(http.StatusOK)) // 通用成功
 )

@@ -31,7 +31,7 @@ func EnterLevel(c *gin.Context) {
 	gameData, err := service.EnterLevel(curLevel, userID)
 	if err != nil {
 		logger.Error(err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 	response.ResSuccess(c, gameData)
@@ -56,7 +56,7 @@ func MissionAccomplished(c *gin.Context) {
 
 	if err := service.MissionAccomplished(userID, taskID); err != nil {
 		logger.Error(err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 	response.ResSuccess(c, true)

@@ -23,7 +23,7 @@ func GetUserByUserID(c *gin.Context) {
 	entity, err := service.GetUserByID(int(userID))
 	if err != nil {
 		logger.Error(err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 	}
 
 	response.ResSuccess(c, entity)
@@ -38,7 +38,7 @@ func UpdateUserBaseMessage(c *gin.Context) {
 	}
 	if err := service.UserInit(&val); err != nil {
 		logger.Error(err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 	}
 	response.ResSuccess(c, true)
 }

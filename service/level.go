@@ -6,6 +6,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"sTest/entity"
 	m "sTest/pkg/mysql"
+	"sTest/pkg/response"
 	"sTest/pkg/viper"
 	pb "sTest/proto"
 	"sTest/repository/document"
@@ -24,12 +25,12 @@ func EnterLevel(levelID int, userID int) (gameData *pb.GameData, err error) {
 	// 大于则提示敬请期待             2-> 第一关没通关
 	levelLen := len(viper.LevelConf.Level)
 	if uint32(levelID) > gameData.LevelData.CurLevel {
-		err = errors.New("先通过前面的关卡,才能继续挑战")
+		err = errors.New(response.MsgPreviousError)
 		logger.Error(err)
 		return nil, err
 	}
 	if levelID > levelLen {
-		err = errors.New("后续关卡暂未开放,敬请期待")
+		err = errors.New(response.MsgNotSubsequentError)
 		logger.Error(err)
 		return nil, err
 	}
@@ -45,7 +46,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 		}
 	}
 	if !ok {
-		err = errors.New("任务不在任务列表中")
+		err = errors.New(response.MsgTaskNotFoundError)
 		logger.Error(err)
 		return err
 	}
@@ -58,7 +59,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 	}
 	// 判断是否超出
 	if int(gameData.LevelData.CurLevel) > len(viper.LevelConf.Level) {
-		err = errors.New("敬请期待")
+		err = errors.New("stay tuned")
 		logger.Error(err)
 		return err
 	}
@@ -71,14 +72,14 @@ func MissionAccomplished(userID, taskID int) (err error) {
 		}
 	}
 	if !ok {
-		err = errors.New("任务不在关卡任务列表中")
+		err = errors.New(response.MsgTaskNotFoundError)
 		logger.Error(err)
 		return err
 	}
 
 	for _, val := range gameData.LevelData.FinishTask {
 		if int(val) == taskID {
-			err = errors.New("任务已完成,无需重复完成")
+			err = errors.New(response.MsgTaskRepeatError)
 			logger.Error(err)
 			return err
 		}
@@ -129,7 +130,7 @@ func Leave(userID, levelID int) (err error) {
 	finishTask := gameData.LevelData.FinishTask
 	levels := viper.LevelConf.Level
 	if len(levels) < levelID || levelID < 1 || gameData.LevelData.CurLevel != uint32(levelID) {
-		err = errors.New("关卡不正确")
+		err = errors.New(response.MsgLevelChooseError)
 		logger.Error(err)
 		return err
 	}
@@ -143,7 +144,7 @@ func Leave(userID, levelID int) (err error) {
 		completed += int(val)
 	}
 	if levelTaskTotal != completed {
-		err = errors.New("请先完成关卡任务")
+		err = errors.New(response.MsgLevelNotSuccess)
 		logger.Error(err)
 		return err
 	}

@@ -47,7 +47,7 @@ func LogOut(c *gin.Context) {
 	err = service.LoginOut(int64(userID))
 	if err != nil {
 		logger.Error(err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 
@@ -81,7 +81,7 @@ func Register(c *gin.Context) {
 	accountData, err := service.Register(&param)
 	if err != nil {
 		logger.Errorf("%+v", err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 

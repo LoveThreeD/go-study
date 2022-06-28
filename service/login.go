@@ -24,7 +24,6 @@ func Login(account *entity.AccountData) (token string, err error) {
 	var userID int64
 	if err = m.DB.Get(&userID, sqlStr, account.Account, account.Passwd); err != nil {
 		logger.Error(err)
-		err = errors.New("账号或密码错误，请输入正确的账号和密码")
 		return "", err
 	}
 
@@ -48,7 +47,7 @@ func Login(account *entity.AccountData) (token string, err error) {
 
 func LoginOut(userId int64) (err error) {
 	if userId < 1 {
-		return errors.New("非法参数")
+		return errors.New(response.MsgParamsError)
 	}
 	offlineTime := time.Now().Unix()
 	// 改变mongo中用户的在线状态

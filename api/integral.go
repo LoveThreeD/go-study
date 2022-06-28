@@ -24,14 +24,14 @@ func GetRanking(c *gin.Context) {
 	selfData, err := service.GetSelfIntegral(userID)
 	if err != nil {
 		logger.Error(err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 
 	data, err := service.GetRanking(50)
 	if err != nil {
 		logger.Error(err)
-		response.ResFail(c, http.StatusNotAcceptable, "")
+		response.ResFail(c, http.StatusFailedDependency, "")
 		return
 	}
 
