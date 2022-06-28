@@ -1,15 +1,14 @@
 package service
 
 import (
-	"github.com/asim/go-micro/v3/logger"
 	"github.com/pkg/errors"
 	"sTest/entity"
 	"sTest/entity/dto"
 	"sTest/entity/login_logout"
 	"sTest/pkg/auth"
-	m "sTest/pkg/mysql"
 	"sTest/pkg/response"
 	"sTest/repository/cache"
+	"sTest/repository/data"
 	"sTest/repository/document"
 	"sTest/repository/document/mongo_key"
 	"sTest/util"
@@ -18,27 +17,24 @@ import (
 )
 
 func Login(account *entity.AccountData) (token string, err error) {
-	// select mysql by account
-	sqlStr := "select user_id from t_account_data where account = ? and passwd = ?"
-
-	var userID int64
-	if err = m.DB.Get(&userID, sqlStr, account.Account, account.Passwd); err != nil {
-		logger.Error(err)
+	// 检查用户账户密码
+	userId, err := data.CheckUserByAccountAndPass(account.Account, account.Passwd)
+	if err != nil {
 		return "", err
 	}
 
 	// 改变mongo中用户的在线状态
-	if err = document.UpdateElementByUserId(mongo_key.BaseIsOnline, userID, true); err != nil {
+	if err = document.UpdateElementByUserId(mongo_key.BaseIsOnline, userId, true); err != nil {
 		return "", errors.Wrap(err, response.MsgFailed)
 	}
 
 	// 检查缓存
-	if _, err := cache.GetUserCache(int(userID)); err != nil {
+	if _, err := cache.GetUserCache(int(userId)); err != nil {
 		return "", err
 	}
 
 	// 生成token
-	token, err = auth.GenerateToken(int(userID))
+	token, err = auth.GenerateToken(int(userId))
 	if err != nil {
 		return "", err
 	}
@@ -62,13 +58,12 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgInitDataError)
 	}
-
 	// store user data in mongo
 	item := dto.UserBaseData{
 		UserId: userId,
 
-		NickName:    param.NickName,
-		AvatarURL:   "default.avatar.URL",
+		NickName: param.NickName,
+		// 注意这里有一个头像属性,默认为空减少存储量,前端会判断没有头像就使用默认的头像
 		IsOnline:    false,
 		OfflineTime: -1,
 		Age:         param.Age,
@@ -89,9 +84,7 @@ func Register(param *login_logout.LoginReq) (v *entity.AccountData, err error) {
 	// get access
 	account := twoChar + strconv.Itoa(int(userId))
 
-	sqlStr := "insert into t_account_data(user_id,passwd,equipment_id,account) values(?,?,?,?)"
-	if _, err = m.DB.Exec(sqlStr, userId, passwd, param.EquipmentID, account); err != nil {
-		logger.Error(err)
+	if err = data.InsertUser(userId, account, passwd, param.EquipmentID); err != nil {
 		return nil, err
 	}
 

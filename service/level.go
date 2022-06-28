@@ -4,18 +4,45 @@ import (
 	"errors"
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/golang/protobuf/proto"
-	"sTest/entity"
-	m "sTest/pkg/mysql"
 	"sTest/pkg/response"
 	"sTest/pkg/viper"
 	pb "sTest/proto"
+	"sTest/repository/data"
 	"sTest/repository/document"
 	"strconv"
 )
 
+var (
+	// gameData的默认初始数据,用来初始化用户的游戏数据
+	gameDataInitData []byte
+)
+
+func init() {
+	var err error
+	// 1.初始化数据
+	levelInit := pb.LevelData{
+		CurLevel: 1,
+	}
+	materialInit := pb.MaterialData{
+		Warehouse: make(map[uint32]uint32),
+	}
+	gameData := pb.GameData{
+		LevelData:  &levelInit,
+		ShopData:   make(map[uint32]uint32),
+		Statistics: &pb.StatisticsData{},
+		Setting:    &pb.GameSetting{},
+		Material:   &materialInit,
+	}
+
+	gameDataInitData, err = proto.Marshal(&gameData)
+	if err != nil {
+		logger.Fatal(err)
+	}
+}
+
 func EnterLevel(levelID int, userID int) (gameData *pb.GameData, err error) {
 	// 获取与判断
-	gameData, err = getGameDataAndConvent(userID)
+	gameData, err = getGameData(userID)
 	if err != nil {
 		logger.Error(err)
 		return nil, err
@@ -43,6 +70,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 	for _, val := range viper.TaskConf.Task {
 		if val.Id == taskID {
 			ok = true
+			break
 		}
 	}
 	if !ok {
@@ -52,7 +80,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 	}
 
 	// 获取与判断
-	gameData, err := getGameDataAndConvent(userID)
+	gameData, err := getGameData(userID)
 	if err != nil {
 		logger.Error(err)
 		return err
@@ -89,20 +117,17 @@ func MissionAccomplished(userID, taskID int) (err error) {
 	gameData.LevelData.FinishTask = append(gameData.LevelData.FinishTask, uint32(taskID))
 	bytes, err := proto.Marshal(gameData)
 	if err != nil {
-		logger.Error(err)
 		return err
 	}
-	updateLevelSQL := "update g_game_data set game_data = ?"
-	if _, err := m.DB.Exec(updateLevelSQL, bytes); err != nil {
-		logger.Error(err)
+	if err = data.UpdateGameData(bytes); err != nil {
 		return err
 	}
-
 	// 积分更新  完成任务积分增加
 	var integral int
 	for _, val := range viper.TaskConf.Task {
 		if val.Id == taskID {
 			integral = val.RewardScore
+			break
 		}
 	}
 
@@ -120,7 +145,7 @@ func MissionAccomplished(userID, taskID int) (err error) {
 
 func Leave(userID, levelID int) (err error) {
 	// 获取
-	gameData, err := getGameDataAndConvent(userID)
+	gameData, err := getGameData(userID)
 	if err != nil {
 		logger.Error(err)
 		return err
@@ -154,13 +179,10 @@ func Leave(userID, levelID int) (err error) {
 	gameData.LevelData.FinishTask = []uint32{}
 	bytes, err := proto.Marshal(gameData)
 	if err != nil {
-		logger.Error(err)
 		return err
 	}
 	// 更新
-	updateLevelSQL := "update g_game_data set game_data = ?"
-	if _, err := m.DB.Exec(updateLevelSQL, bytes); err != nil {
-		logger.Error(err)
+	if err := data.UpdateGameData(bytes); err != nil {
 		return err
 	}
 
@@ -185,53 +207,23 @@ func Leave(userID, levelID int) (err error) {
 
 // InitUserGameData 初始化用户游戏数据
 func InitUserGameData() (userId int64, err error) {
-	// 1.初始化数据
-	levelInit := pb.LevelData{
-		CurLevel: 1,
-	}
-	materialInit := pb.MaterialData{
-		Warehouse: make(map[uint32]uint32),
-	}
-	data := pb.GameData{
-		LevelData:  &levelInit,
-		ShopData:   make(map[uint32]uint32),
-		Statistics: &pb.StatisticsData{},
-		Setting:    &pb.GameSetting{},
-		Material:   &materialInit,
-	}
-
-	bytes, err := proto.Marshal(&data)
-	if err != nil {
-		logger.Error(err)
-		return 0, err
-	}
-
-	// 2.保存到MySql
-	insertGameDataSQL := "insert into g_game_data(game_data) values(?)"
-	result, err := m.DB.Exec(insertGameDataSQL, bytes)
-	if err != nil {
-		logger.Error(err)
-		return 0, err
-	}
-	lastInsertId, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
+	// 存储用户游戏数据
+	lastInsertId, err := data.InsertGameData(gameDataInitData)
 	return lastInsertId, nil
 }
 
-func getGameDataAndConvent(userID int) (*pb.GameData, error) {
+/*
+	获取游戏数据
+*/
+func getGameData(userId int) (*pb.GameData, error) {
 	// 数据库拿到数据
-	sqlStr := "select user_id ,game_data from g_game_data where user_id = ?"
-	data := entity.GameData{}
-	if err := m.DB.Get(&data, sqlStr, userID); err != nil {
-		logger.Error(err)
+	data, err := data.GetGameData(userId)
+	if err != nil {
 		return nil, err
 	}
 	// 解析
 	gameData := &pb.GameData{}
 	if err := proto.Unmarshal(data.GameData, gameData); err != nil {
-		logger.Error(err)
 		return nil, err
 	}
 	return gameData, nil

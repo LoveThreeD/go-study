@@ -4,8 +4,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/asim/go-micro/v3/logger"
-	"github.com/garyburd/redigo/redis"
 	"sTest/entity"
 	r "sTest/pkg/redis"
 	"sTest/repository/cache"
@@ -19,105 +17,87 @@ const (
 
 /*
   增加积分
-  1.add task integral
-  2.add level integral
 */
 
-func AddIntegral(key string, integral int) (err error) {
-	conn := r.Pool.Get()
-	defer conn.Close()
-	if _, err := conn.Do("zincrby", GetLastIntegralKey(), integral, key); err != nil {
-		logger.Error(err)
-		return err
-	}
-	return nil
+func AddIntegral(key string, points int) (err error) {
+	return cache.AddPoints(key, points)
 }
 
 /*
-	get ranking
-      1. 50                   zrevrangebyscore ranking +inf -inf limit 0 50
-      2. self                 zscore ranking c
+	获取排行榜,榜单前50名以及自己排名
 */
-func GetRanking(count int) (ranking []entity.LeaderBoardData, err error) {
-	conn := r.Pool.Get()
-	defer conn.Close()
-	// zrevrangebyscore ranking +inf -inf limit 0 50
-	rels, err := redis.Strings(conn.Do("zrevrangebyscore", GetLastIntegralKey(), "+inf", "-inf", "WITHSCORES", "limit", 0, count))
+func GetRanking(count int) ([]*entity.LeaderBoardData, error) {
+	ranks, err := cache.GetRanks(count)
 	if err != nil {
-		logger.Error(err)
-		return
+		return nil, err
 	}
-	ranking = make([]entity.LeaderBoardData, 0)
-	var item entity.LeaderBoardData
-	for i, val := range rels {
-		var userId int
-		if i%2 == 0 {
-			userId, err = strconv.Atoi(val)
-			if err != nil {
-				return nil, err
-			}
-			userCache, err := cache.GetUserCache(userId)
-			if err != nil {
-				return nil, err
-			}
+	ranking := make([]*entity.LeaderBoardData, len(ranks)/2)
 
-			item = entity.LeaderBoardData{}
-			item.UserName = userCache.NickName
-			item.AvatarURL = userCache.AvatarUrl
-		} else {
-			item.Number = (i + 1) / 2
-			if item.Integral, err = strconv.Atoi(val); err != nil {
-				logger.Error(err)
-				return
-			}
-			ranking = append(ranking, item)
+	// 从redis中获取的数据格式为   [k1][v1][k2][v2]....    k为用户的userId  v为用户的排行榜积分
+	// 解析缓存排行榜数据,用userId获取用户信息填充
+	for i := 0; i < len(ranks); i = i + 2 {
+		userId, err := strconv.Atoi(ranks[i])
+		if err != nil {
+			return nil, err
 		}
+		userCache, err := cache.GetUserCache(userId)
+		if err != nil {
+			return nil, err
+		}
+		item := entity.LeaderBoardData{
+			UserName:  userCache.NickName,
+			AvatarURL: userCache.AvatarUrl,
+			// i = 0,2,4,6...   排名结果就为 = 1,2,3,4...
+			Number: (i + 2) / 2,
+		}
+		if item.Integral, err = strconv.Atoi(ranks[i+1]); err != nil {
+			return nil, err
+		}
+		ranking = append(ranking, &item)
 	}
-	return
+	return ranking, nil
 }
 
-func GetSelfIntegral(userID int) (ranking entity.LeaderBoardData, err error) {
+func GetSelfIntegral(userId int) (*entity.LeaderBoardData, error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
-
-	userCache, err := cache.GetUserCache(userID)
+	// 获取用户数据
+	userCache, err := cache.GetUserCache(userId)
 	if err != nil {
-		logger.Error(err)
-		return
+		return nil, err
+	}
+	// 获取排名
+	number, err := cache.GetOneRanks(userId)
+	if err != nil {
+		return nil, err
+	}
+	// 获取积分
+	points, err := cache.GetOnePoints(userId)
+	if err != nil {
+		return nil, err
 	}
 
-	number, err := redis.Int(conn.Do("ZREVRANK", GetLastIntegralKey(), userID))
-	if err != nil {
-		switch err.Error() {
-		case "redigo: nil returned":
-			number = 0
-		default:
-			logger.Error(err)
-			return
-		}
-	}
-
-	score, err := redis.Int(conn.Do("zscore", GetLastIntegralKey(), userID))
-	if err != nil {
-		switch err.Error() {
-		case "redigo: nil returned":
-			score = 0
-		default:
-			logger.Error(err)
-			return
-		}
-	}
-
-	ranking = entity.LeaderBoardData{
+	ranking := &entity.LeaderBoardData{
 		Number:    number + 1,
-		Integral:  score,
+		Integral:  points,
 		UserName:  userCache.NickName,
 		AvatarURL: userCache.AvatarUrl,
 	}
 	return ranking, nil
 }
 
-func GetLastIntegralKey() string {
+/*
+	获取上月的缓存中的积分key值
+*/
+func GetLastPointsKey() string {
 	month := time.Now().Month()
 	return fmt.Sprintf("%s:%d", LeaderBoardName, month-1)
+}
+
+/*
+	获取本月要存储在缓存中的积分key值
+*/
+func GetPointsKey() string {
+	month := time.Now().Month()
+	return fmt.Sprintf("%s:%d", LeaderBoardName, month)
 }

@@ -10,7 +10,7 @@ import (
 func init() {
 	c := cron.New()
 	c.AddFunc("0 0 1 */1 *", func() {
-		if err := cache.ExpireDelCache(service.GetLastIntegralKey()); err != nil {
+		if err := cache.ExpireDelCache(service.GetLastPointsKey()); err != nil {
 			logger.Error(err)
 		}
 	})
