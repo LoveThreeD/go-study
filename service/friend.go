@@ -155,8 +155,8 @@ func ExistsInFriends(friend *friend_dto.ReqFriendAdd) error {
 	}
 	for _, v := range user.Friends {
 		if v == friend.FriendUserId {
-			return nil
+			return errors.New("already exists in friends list")
 		}
 	}
-	return errors.New("already exists in friends list")
+	return nil
 }
