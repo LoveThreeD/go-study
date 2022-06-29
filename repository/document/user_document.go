@@ -153,8 +153,8 @@ func UpdateFriendsByUserId(userId int64, friendId int64) (err error) {
 	return nil
 }
 
-// DeleteFriendList 删除好友列表中的userId
-func DeleteFriendList(userId int64, friendId int64) (err error) {
+// DeleteFriend 删除好友列表中的userId
+func DeleteFriend(userId int64, friendId int64) (err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return

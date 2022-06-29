@@ -38,8 +38,8 @@ func RequestFriend(friend *friend_dto.ReqFriendAdd) error {
 	return nil
 }
 
-// AddFriendList  添加到好友列表
-func AddFriendList(friend *friend_dto.ReqFriendAdd) error {
+// AddFriend  添加到好友列表
+func AddFriend(friend *friend_dto.ReqFriendAdd) error {
 	// 好友限制30个
 	selfData, err := document.SelectUser(int(friend.SelfUserId))
 	if err != nil {
@@ -82,8 +82,8 @@ func AddFriendList(friend *friend_dto.ReqFriendAdd) error {
 	return nil
 }
 
-// NotPass 未通过申请处理  主体是被申请人
-func NotPass(friend *friend_dto.ReqFriendAdd) error {
+// NotPassFriend 未通过申请处理  主体是被申请人
+func NotPassFriend(friend *friend_dto.ReqFriendAdd) error {
 	// XXX 该操作应该是原子的,后续优化
 	item := dto.Applied{
 		UserId: friend.FriendUserId,
@@ -104,23 +104,23 @@ func NotPass(friend *friend_dto.ReqFriendAdd) error {
 	return nil
 }
 
-// DeleteFriendList  刪除好友,双向删除
-func DeleteFriendList(friend *friend_dto.ReqFriendAdd) error {
+// DeleteFriend  刪除好友,双向删除
+func DeleteFriend(friend *friend_dto.ReqFriendAdd) error {
 	// XXX \该操作应该是原子的,后续优化
 	// I delete friend
-	if err := document.DeleteFriendList(friend.SelfUserId, friend.FriendUserId); err != nil {
+	if err := document.DeleteFriend(friend.SelfUserId, friend.FriendUserId); err != nil {
 		return err
 	}
 	// friend delete me
-	if err := document.DeleteFriendList(friend.FriendUserId, friend.SelfUserId); err != nil {
+	if err := document.DeleteFriend(friend.FriendUserId, friend.SelfUserId); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// GetRecommendFriends  推荐好友, 1.自己国家 2.积分大于自己  3.每次5个,不足补充其它国家的
-func GetRecommendFriends(req *friend_dto.ReqRecommend) ([]*friend_dto.RespFriendRecommend, error) {
+// FindSugFriends  推荐好友, 1.自己国家 2.积分大于自己  3.每次5个,不足补充其它国家的
+func FindSugFriends(req *friend_dto.ReqRecommend) ([]*friend_dto.RespFriendRecommend, error) {
 
 	const recommendNumber = 5
 

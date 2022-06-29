@@ -72,7 +72,7 @@ func ConfirmFriend(c *gin.Context) {
 
 	// 拒绝
 	if params.Agree == 0 {
-		if err := service.NotPass(&params); err != nil {
+		if err := service.NotPassFriend(&params); err != nil {
 			logger.Errorf("%+v", err)
 			response.ResFail(c, http.StatusFailedDependency, "")
 			return
@@ -81,8 +81,8 @@ func ConfirmFriend(c *gin.Context) {
 		return
 	}
 
-	// search user
-	if err := service.AddFriendList(&params); err != nil {
+	// 同意
+	if err := service.AddFriend(&params); err != nil {
 		logger.Errorf("%+v", err)
 		response.ResFail(c, http.StatusFailedDependency, "")
 		return
@@ -100,7 +100,7 @@ func DeleteFriend(c *gin.Context) {
 		return
 	}
 	// search user
-	if err := service.DeleteFriendList(&params); err != nil {
+	if err := service.DeleteFriend(&params); err != nil {
 		logger.Errorf("%+v", err)
 		response.ResFail(c, http.StatusFailedDependency, "")
 		return
@@ -118,7 +118,7 @@ func RecommendFriend(c *gin.Context) {
 		return
 	}
 	// search user
-	friends, err := service.GetRecommendFriends(&params)
+	friends, err := service.FindSugFriends(&params)
 	if err != nil {
 		logger.Errorf("%+v", err)
 		response.ResFail(c, http.StatusFailedDependency, "")
