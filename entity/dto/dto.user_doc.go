@@ -6,7 +6,7 @@ type UserBaseData struct {
 	Age     int       `bson:"age"`
 	Country string    `bson:"country"`
 	Points  int       `bson:"points"`
-	Applied []Applied `bson:"applied"`
+	Applied []Applied `bson:"request_status"`
 	// 好友列表 Friend list
 	Friends     []int64 `bson:"friends"`
 	NickName    string  `bson:"nickname"`

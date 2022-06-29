@@ -54,7 +54,7 @@ func LoginOut(userId int64) error {
 }
 
 func Register(param *login_logout.LoginReq) (*entity.AccountData, error) {
-	userId, err := InitUserGameData()
+	userId, err := CreateUserGameData()
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgInitDataError)
 	}

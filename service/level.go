@@ -189,8 +189,7 @@ func FinishLevel(userId, levelId int) error {
 	return nil
 }
 
-// InitUserGameData 初始化用户游戏数据
-func InitUserGameData() (int64, error) {
+func CreateUserGameData() (int64, error) {
 	// 存储用户游戏数据
 	lastInsertId, err := data.InsertGameData(gameDataInitData)
 	if err != nil {

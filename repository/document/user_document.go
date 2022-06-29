@@ -85,6 +85,7 @@ func AddPoints(userId int, points int) (err error) {
 }
 
 // UpdateElementByUserId 更新该文档中的任一值
+// 要是传入bson.M{}的话,在server层写db层的一些代码.不知道如何取舍，或者使用...可变参数
 func UpdateElementByUserId(itemName string, userId int64, v interface{}) (err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
@@ -108,6 +109,7 @@ func UpdateElementByUserId(itemName string, userId int64, v interface{}) (err er
 	return nil
 }
 
+// 要是传入bson.M{}的话,在server层写db层的一些代码.不知道如何取舍，或者使用...可变参数
 func UpdateTwoElementByUserId(userId int64, itemName1, itemName2 string, v1, v2 interface{}) (err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
