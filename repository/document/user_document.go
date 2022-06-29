@@ -65,7 +65,7 @@ func SelectUserByNickname(reqParams *friend_dto.ReqFriendSearch) ([]*friend_dto.
 	return c, nil
 }
 
-func AddPoints(userId int, integral int) (err error) {
+func AddPoints(userId int, points int) (err error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return
@@ -75,116 +75,13 @@ func AddPoints(userId int, integral int) (err error) {
 	}
 	update := bson.M{
 		"$inc": bson.M{
-			"integral": integral,
+			mongo_key.BasePoints: points,
 		},
 	}
 	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
 		return errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	return
-}
-
-// XXX 通过userId更新数组可以封装
-
-func UpdateApplicationListByUserId(userId int64, applicationId int64) (err error) {
-	collection, err := getUserDocumentConnect()
-	if err != nil {
-		return
-	}
-	filter := bson.M{
-		mongo_key.BaseUserId: userId,
-	}
-	update := bson.M{
-		"$push": bson.M{
-			"applicationlist": applicationId,
-		},
-	}
-	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
-		return errors.Wrap(err, response.MsgMongoSelectUserError)
-	}
-	return nil
-}
-
-func UpdateAlreadyAppliedListByUserId(userId int64, alreadyApplied int64) (err error) {
-	collection, err := getUserDocumentConnect()
-	if err != nil {
-		return
-	}
-	filter := bson.M{
-		mongo_key.BaseUserId: userId,
-	}
-	update := bson.M{
-		"$push": bson.M{
-			"alreadyappliedlist": alreadyApplied,
-		},
-	}
-	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
-		return errors.Wrap(err, response.MsgMongoSelectUserError)
-	}
-	return nil
-}
-
-func UpdateNoPassListByUserId(userId int64, noPass int64) (err error) {
-	collection, err := getUserDocumentConnect()
-	if err != nil {
-		return
-	}
-	filter := bson.M{
-		mongo_key.BaseUserId: userId,
-	}
-	update := bson.M{
-		"$push": bson.M{
-			"nopass": noPass,
-		},
-	}
-	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
-		return errors.Wrap(err, response.MsgMongoSelectUserError)
-	}
-	return nil
-}
-
-// UpdateAddElementByUserId 通过userId查找文档,添加文档中arrayName数组的元素
-func UpdateAddElementByUserId(arrayName string, userId int64, noPass int64) (err error) {
-	collection, err := getUserDocumentConnect()
-	if err != nil {
-		return
-	}
-	filter := bson.M{
-		mongo_key.BaseUserId: userId,
-	}
-	update := bson.M{
-		"$push": bson.M{
-			arrayName: noPass,
-		},
-	}
-	if _, err = collection.UpdateOne(context.TODO(), filter, update); err != nil {
-		return errors.Wrap(err, response.MsgMongoSelectUserError)
-	}
-	return nil
-}
-
-// DeleteElementByUserId 通过userId查找文档,删除文档中arrayName数组的元素
-func DeleteElementByUserId(arrayName string, userId int64, friendId int64) (err error) {
-	collection, err := getUserDocumentConnect()
-	if err != nil {
-		return
-	}
-	filter := bson.M{
-		mongo_key.BaseUserId: userId,
-	}
-	update := bson.M{
-		"$pull": bson.M{
-			arrayName: friendId,
-		},
-	}
-	result, err := collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return errors.Wrap(err, response.MsgMongoSelectUserError)
-	}
-	if result.ModifiedCount < 1 {
-		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
-	}
-	return nil
 }
 
 // UpdateElementByUserId 更新该文档中的任一值
@@ -254,30 +151,6 @@ func UpdateFriendsByUserId(userId int64, friendId int64) (err error) {
 	return nil
 }
 
-// DeleteApplicationList 删除申请列表中的userId
-func DeleteApplicationList(userId int64, friendId int64) (err error) {
-	collection, err := getUserDocumentConnect()
-	if err != nil {
-		return
-	}
-	filter := bson.M{
-		mongo_key.BaseUserId: userId,
-	}
-	update := bson.M{
-		"$pull": bson.M{
-			"applicationlist": friendId,
-		},
-	}
-	result, err := collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return errors.Wrap(err, response.MsgMongoSelectUserError)
-	}
-	if result.ModifiedCount < 1 {
-		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
-	}
-	return nil
-}
-
 // DeleteFriendList 删除好友列表中的userId
 func DeleteFriendList(userId int64, friendId int64) (err error) {
 	collection, err := getUserDocumentConnect()
@@ -302,8 +175,8 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 	return nil
 }
 
-// SelectFriendByCountryAndIntegral 好友推荐
-func SelectFriendByCountryAndIntegral(country string, integral int, limit int64, diffCountry bool) ([]*friend_dto.RespFriendRecommend, error) {
+// SelectFriendByCountryAndPoints 好友推荐
+func SelectFriendByCountryAndPoints(country string, integral int, limit int64, diffCountry bool) ([]*friend_dto.RespFriendRecommend, error) {
 	collection, err := getUserDocumentConnect()
 	if err != nil {
 		return nil, err
@@ -311,7 +184,7 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 
 	filter := bson.M{
 		mongo_key.BaseCountry: country,
-		mongo_key.BaseIntegral: bson.M{
+		mongo_key.BasePoints: bson.M{
 			"$gt": integral,
 		},
 	}
@@ -322,7 +195,7 @@ func SelectFriendByCountryAndIntegral(country string, integral int, limit int64,
 			mongo_key.BaseCountry: bson.M{
 				"$ne": country,
 			},
-			mongo_key.BaseIntegral: bson.M{
+			mongo_key.BasePoints: bson.M{
 				"$gt": integral,
 			},
 		}

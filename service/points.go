@@ -43,7 +43,7 @@ func GetRanking(count int) ([]*entity.LeaderBoardData, error) {
 			// i = 0,2,4,6...   排名结果就为 = 1,2,3,4...
 			Number: (i + 2) / 2,
 		}
-		if item.Integral, err = strconv.Atoi(ranks[i+1]); err != nil {
+		if item.Points, err = strconv.Atoi(ranks[i+1]); err != nil {
 			return nil, err
 		}
 		ranking = append(ranking, &item)
@@ -72,7 +72,7 @@ func GetPointsById(userId int) (*entity.LeaderBoardData, error) {
 
 	ranking := &entity.LeaderBoardData{
 		Number:    number + 1,
-		Integral:  points,
+		Points:    points,
 		UserName:  userCache.NickName,
 		AvatarURL: userCache.AvatarUrl,
 	}

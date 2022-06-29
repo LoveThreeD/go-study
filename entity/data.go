@@ -4,5 +4,5 @@ type LeaderBoardData struct {
 	Number    int
 	UserName  string
 	AvatarURL string
-	Integral  int
+	Points    int
 }

@@ -4,7 +4,7 @@ const (
 	BaseUserId            = "_id"
 	BaseAge               = "age"
 	BaseCountry           = "country"
-	BaseIntegral          = "integral"
+	BasePoints            = "points"
 	BaseApplied           = "applied"
 	BaseUserIdInApplied   = "applied.user_id"
 	BaseUpUserIdInApplied = "applied.$.user_id"

@@ -6,7 +6,7 @@ type RespFriendRecommend struct {
 	UserId      int64
 	Age         int
 	Country     string
-	Integral    int
+	Points      int
 	NickName    string
 	AvatarURL   string
 	IsOnline    bool
@@ -18,7 +18,7 @@ func ConventRespFriendRecommend(item *dto.UserBaseData) RespFriendRecommend {
 	result.UserId = item.UserId
 	result.Age = item.Age
 	result.Country = item.Country
-	result.Integral = item.Integral
+	result.Points = item.Points
 	result.NickName = item.NickName
 	result.AvatarURL = item.AvatarURL
 	result.IsOnline = item.IsOnline

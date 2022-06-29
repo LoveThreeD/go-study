@@ -8,7 +8,7 @@ import (
 )
 
 func GetNickNameAndAvatar(userId int) (c *dto.UserCache, err error) {
-	sqlStr := "SELECT nickname,avatar_url,is_online FROM t_base_data WHERE user_id = ?"
+	sqlStr := "SELECT nickname,avatar_url,is_online FROM base_data WHERE user_id = ?"
 	c = &dto.UserCache{}
 	if err = m.DB.Get(c, sqlStr, userId); err != nil {
 		logger.Error(err)
@@ -22,7 +22,7 @@ func GetNickNameAndAvatar(userId int) (c *dto.UserCache, err error) {
 */
 func CheckUserByAccountAndPass(account, pass string) (int64, error) {
 	// select mysql by account
-	sqlStr := "SELECT user_id FROM t_account_data WHERE account = ? AND passwd = ?"
+	sqlStr := "SELECT user_id FROM account_data WHERE account = ? AND passwd = ?"
 
 	var userId int64
 	if err := m.DB.Get(&userId, sqlStr, account, pass); err != nil {
@@ -38,7 +38,7 @@ func CheckUserByAccountAndPass(account, pass string) (int64, error) {
 	插入用户数据
 */
 func InsertUser(userId int64, account, passwd, equipmentID string) error {
-	query := "INSERT INTO t_account_data(user_id,passwd,equipment_id,account) VALUES(?,?,?,?)"
+	query := "INSERT INTO account_data(user_id,passwd,equipment_id,account) VALUES(?,?,?,?)"
 	result, err := m.DB.Exec(query, userId, passwd, equipmentID, account)
 	if err != nil {
 		return err

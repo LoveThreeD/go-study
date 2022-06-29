@@ -68,7 +68,7 @@ func Register(param *login_logout.LoginReq) (*entity.AccountData, error) {
 		OfflineTime: -1,
 		Age:         param.Age,
 		Country:     param.Country,
-		Integral:    0,
+		Points:      0,
 		Friends:     []int64{},
 		Applied:     []dto.Applied{},
 	}

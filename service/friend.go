@@ -131,14 +131,14 @@ func GetRecommendFriends(req *friend_dto.ReqRecommend) ([]*friend_dto.RespFriend
 	}
 
 	// 查询符合条件的同国家玩家
-	users, err := document.SelectFriendByCountryAndIntegral(user.Country, user.Integral, recommendNumber, false)
+	users, err := document.SelectFriendByCountryAndPoints(user.Country, user.Points, recommendNumber, false)
 	if err != nil {
 		return nil, errors.Wrap(err, response.MsgFailed)
 	}
 
 	// 数量不足补充
 	if recommendNumber-len(users) > 0 {
-		supplementUsers, err := document.SelectFriendByCountryAndIntegral(user.Country, user.Integral, int64(recommendNumber-len(users)), true)
+		supplementUsers, err := document.SelectFriendByCountryAndPoints(user.Country, user.Points, int64(recommendNumber-len(users)), true)
 		if err != nil {
 			return nil, errors.Wrap(err, response.MsgFailed)
 		}
