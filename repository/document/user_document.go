@@ -104,7 +104,7 @@ func UpdateElementByUserId(itemName string, userId int64, v interface{}) (err er
 		return errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	if result.ModifiedCount < 1 {
-		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+		return errors.New(response.MsgMongoUpdateUserError)
 	}
 	return nil
 }
@@ -129,7 +129,7 @@ func UpdateTwoElementByUserId(userId int64, itemName1, itemName2 string, v1, v2 
 		return errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	if result.ModifiedCount < 1 {
-		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+		return errors.New(response.MsgMongoUpdateUserError)
 	}
 	return nil
 }
@@ -172,7 +172,7 @@ func DeleteFriendList(userId int64, friendId int64) (err error) {
 		return errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	if result.ModifiedCount < 1 {
-		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+		return errors.New(response.MsgMongoUpdateUserError)
 	}
 	return nil
 }
@@ -233,7 +233,7 @@ func AddApplied(userId int64, item *dto.Applied) (err error) {
 		return errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	if result.ModifiedCount < 1 {
-		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+		return errors.New(response.MsgMongoUpdateUserError)
 	}
 	return nil
 }
@@ -258,7 +258,7 @@ func UpdateAppliedStatus(userId int64, item *dto.Applied) (err error) {
 		return errors.Wrap(err, response.MsgMongoSelectUserError)
 	}
 	if result.ModifiedCount < 1 {
-		return errors.Wrap(errors.New(response.MsgMongoUpdateUserError), response.MsgMongoUpdateUserError)
+		return errors.New(response.MsgMongoUpdateUserError)
 	}
 	return nil
 }

@@ -29,11 +29,11 @@ func init() {
 func GetDocumentConnect(dbName, collName string) (c *mongo.Collection, err error) {
 	db := Client.Database(dbName)
 	if db == nil {
-		return nil, errors.Wrap(errors.New(response.MsgMongoDbConnectionError), response.MsgMongoDbConnectionError)
+		return nil, errors.New(response.MsgMongoDbConnectionError)
 	}
 	c = db.Collection(collName)
 	if c == nil {
-		return nil, errors.Wrap(errors.New(response.MsgMongoCollConnectionError), response.MsgMongoCollConnectionError)
+		return nil, errors.New(response.MsgMongoCollConnectionError)
 	}
 	return c, nil
 }

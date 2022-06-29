@@ -50,7 +50,7 @@ func AddFriendList(friend *friend_dto.ReqFriendAdd) error {
 		return err
 	}
 	if len(selfData.Friends)+1 > 30 && len(friendData.Friends)+1 > 30 {
-		return errors.Wrap(errors.New(response.MsgFriendNumberError), response.MsgFriendNumberError)
+		return errors.New(response.MsgFriendNumberError)
 	}
 	// XXX 该操作应该是原子的,后续优化
 	item := dto.Applied{
