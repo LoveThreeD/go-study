@@ -10,6 +10,7 @@ func InitRouter(router *gin.Engine) {
 	router.POST("/register", api.Register)
 	router.POST("/logout", api.LogOut)
 
+	// 该处Token校验因为测试中每次都要传，因此暂时注释
 	/*router.Use(middleware.UserAuthMiddleware(
 		middleware.AllowPathPrefixSkipper("/login", "/register"),
 	))*/

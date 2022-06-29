@@ -18,6 +18,29 @@ func SearchUser(search *friend_dto.ReqFriendSearch) ([]*friend_dto.RespFriendRec
 
 // AddApplicationList  添加到申请列表 And 添加到已申请列表
 func AddApplicationList(friend *friend_dto.ReqFriendAdd) error {
+
+	item := dto.Applied{
+		UserId: friend.FriendUserId,
+		Status: dto.Apply,
+	}
+	if err := document.AddApplied(friend.SelfUserId, &item); err != nil {
+		return errors.Wrap(err, response.MsgFailed)
+	}
+
+	item = dto.Applied{
+		UserId: friend.SelfUserId,
+		Status: dto.OtherApply,
+	}
+	if err := document.AddApplied(friend.FriendUserId, &item); err != nil {
+		return errors.Wrap(err, response.MsgFailed)
+	}
+
+	return nil
+}
+
+// AddFriendList  添加到好友列表
+func AddFriendList(friend *friend_dto.ReqFriendAdd) error {
+	// 好友限制30个
 	selfData, err := document.SelectUser(int(friend.SelfUserId))
 	if err != nil {
 		return err
@@ -29,28 +52,6 @@ func AddApplicationList(friend *friend_dto.ReqFriendAdd) error {
 	if len(selfData.Friends)+1 > 30 && len(friendData.Friends)+1 > 30 {
 		return errors.Wrap(errors.New(response.MsgFriendNumberError), response.MsgFriendNumberError)
 	}
-
-	item := dto.Applied{
-		UserId: friend.FriendUserId,
-		Status: dto.Apply,
-	}
-	if err = document.AddApplied(friend.SelfUserId, &item); err != nil {
-		return errors.Wrap(err, response.MsgFailed)
-	}
-
-	item = dto.Applied{
-		UserId: friend.SelfUserId,
-		Status: dto.OtherApply,
-	}
-	if err = document.AddApplied(friend.FriendUserId, &item); err != nil {
-		return errors.Wrap(err, response.MsgFailed)
-	}
-
-	return nil
-}
-
-// AddFriendList  添加到好友列表
-func AddFriendList(friend *friend_dto.ReqFriendAdd) error {
 	// XXX 该操作应该是原子的,后续优化
 	item := dto.Applied{
 		UserId: friend.FriendUserId,
