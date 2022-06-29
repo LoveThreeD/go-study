@@ -3,7 +3,8 @@ package service
 import (
 	"errors"
 	"github.com/asim/go-micro/v3/logger"
-	"github.com/golang/protobuf/proto"
+	// "github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"strconv"
 	"study/pkg/response"
 	"study/pkg/viper"
@@ -127,17 +128,19 @@ func FinishTask(userId, taskId int) (err error) {
 	if err != nil {
 		return err
 	}
-	if err = data.UpdateGameData(bytes); err != nil {
+	if err := data.UpdateGameData(bytes); err != nil {
 		return err
 	}
 	// 积分更新  完成任务积分增加
 	points := taskData[taskId]
 
 	// mongo integral incr  积分增加(mongo)
-	go document.AddPoints(userId, points)
+	if err := document.AddPoints(userId, points); err != nil {
+		return err
+	}
 
 	// redis integral incr  积分增加(redis)
-	if err = addPoints(strconv.Itoa(userId), points); err != nil {
+	if err := addPoints(strconv.Itoa(userId), points); err != nil {
 		return err
 	}
 	return nil
@@ -175,13 +178,15 @@ func FinishLevel(userId, levelId int) error {
 	}
 
 	// 增加积分
-	integral := levelData[levelId]
+	points := levelData[levelId]
 
 	// mongo integral incr  积分增加(mongo)
-	go document.AddPoints(userId, integral)
+	if err := document.AddPoints(userId, points); err != nil {
+		return err
+	}
 
 	// 排行榜积分增加
-	if err := addPoints(strconv.Itoa(userId), integral); err != nil {
+	if err := addPoints(strconv.Itoa(userId), points); err != nil {
 		logger.Error(err)
 		return err
 	}

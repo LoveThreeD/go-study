@@ -15,6 +15,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.7.1
 	go.mongodb.org/mongo-driver v1.9.1
+	golang.org/x/tools v0.0.0-20210106214847-113979e3529a // indirect
 	google.golang.org/protobuf v1.28.0
 )
 

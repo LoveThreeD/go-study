@@ -1,11 +1,12 @@
 package service
 
 import (
-	"github.com/pkg/errors"
 	"study/entity/dto"
 	"study/entity/friend_dto"
 	"study/pkg/response"
 	"study/repository/document"
+
+	"github.com/pkg/errors"
 )
 
 func SearchUser(search *friend_dto.ReqFriendSearch) ([]*friend_dto.RespFriendRecommend, error) {
@@ -16,7 +17,7 @@ func SearchUser(search *friend_dto.ReqFriendSearch) ([]*friend_dto.RespFriendRec
 	return users, nil
 }
 
-//  RequestFriend  添加到申请列表  添加到已申请列表
+// RequestFriend  添加到申请列表  添加到已申请列表
 func RequestFriend(friend *friend_dto.ReqFriendAdd) error {
 
 	item := dto.Applied{
