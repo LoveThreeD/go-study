@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/asim/go-micro/v3/logger"
 	redisBase "github.com/garyburd/redigo/redis"
-	"sTest/entity/dto"
-	"sTest/pkg/redis"
-	"sTest/repository/document"
+	"study/entity/dto"
+	"study/pkg/redis"
+	"study/repository/document"
 )
 
 const (

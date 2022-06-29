@@ -2,17 +2,17 @@ package service
 
 import (
 	"github.com/pkg/errors"
-	"sTest/entity"
-	"sTest/entity/dto"
-	"sTest/entity/login_logout"
-	"sTest/pkg/auth"
-	"sTest/pkg/response"
-	"sTest/repository/cache"
-	"sTest/repository/data"
-	"sTest/repository/document"
-	"sTest/repository/document/mongo_key"
-	"sTest/util"
 	"strconv"
+	"study/entity"
+	"study/entity/dto"
+	"study/entity/login_logout"
+	"study/pkg/auth"
+	"study/pkg/response"
+	"study/repository/cache"
+	"study/repository/data"
+	"study/repository/document"
+	"study/repository/document/mongo_key"
+	"study/util"
 	"time"
 )
 

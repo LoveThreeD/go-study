@@ -1,6 +1,6 @@
 package friend_dto
 
-import "sTest/entity/dto"
+import "study/entity/dto"
 
 type RespFriendRecommend struct {
 	UserId      int64

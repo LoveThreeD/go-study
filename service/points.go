@@ -3,10 +3,10 @@ package service
 /* 积分服务*/
 
 import (
-	"sTest/entity"
-	r "sTest/pkg/redis"
-	"sTest/repository/cache"
 	"strconv"
+	"study/entity"
+	r "study/pkg/redis"
+	"study/repository/cache"
 )
 
 /*

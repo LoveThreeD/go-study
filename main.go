@@ -8,13 +8,13 @@ import (
 	"github.com/asim/go-micro/v3/server"
 	"github.com/gin-gonic/gin"
 
-	r "sTest/router"
+	r "study/router"
 	/* 定时任务初始化*/
-	_ "sTest/pkg/timing"
+	_ "study/pkg/timing"
 )
 
 var (
-	ServerName = "sTest"
+	ServerName = "study"
 )
 
 func main() {

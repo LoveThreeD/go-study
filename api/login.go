@@ -5,11 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"net/http"
-	"sTest/entity"
-	"sTest/entity/login_logout"
-	"sTest/pkg/response"
-	"sTest/service"
 	"strconv"
+	"study/entity"
+	"study/entity/login_logout"
+	"study/pkg/response"
+	"study/service"
 )
 
 // Login access+passwd

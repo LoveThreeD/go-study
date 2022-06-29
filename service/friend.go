@@ -2,10 +2,10 @@ package service
 
 import (
 	"github.com/pkg/errors"
-	"sTest/entity/dto"
-	"sTest/entity/friend_dto"
-	"sTest/pkg/response"
-	"sTest/repository/document"
+	"study/entity/dto"
+	"study/entity/friend_dto"
+	"study/pkg/response"
+	"study/repository/document"
 )
 
 func SearchUser(search *friend_dto.ReqFriendSearch) ([]*friend_dto.RespFriendRecommend, error) {

@@ -3,7 +3,7 @@ package redis
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"sTest/pkg/viper"
+	"study/pkg/viper"
 )
 
 // Pool redis连接池

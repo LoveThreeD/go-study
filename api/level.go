@@ -4,9 +4,9 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sTest/pkg/response"
-	"sTest/service"
 	"strconv"
+	"study/pkg/response"
+	"study/service"
 )
 
 func EnterLevel(c *gin.Context) {

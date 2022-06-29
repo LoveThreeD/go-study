@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"sTest/api"
+	"study/api"
 )
 
 func InitRouter(router *gin.Engine) {

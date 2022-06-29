@@ -3,7 +3,7 @@ package timing
 import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/robfig/cron/v3"
-	"sTest/repository/cache"
+	"study/repository/cache"
 )
 
 func init() {

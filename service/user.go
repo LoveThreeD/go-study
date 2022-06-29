@@ -1,9 +1,9 @@
 package service
 
 import (
-	"sTest/entity/user"
-	"sTest/repository/document"
-	"sTest/repository/document/mongo_key"
+	"study/entity/user"
+	"study/repository/document"
+	"study/repository/document/mongo_key"
 )
 
 func UserInit(in *user.ReqUserBase) error {

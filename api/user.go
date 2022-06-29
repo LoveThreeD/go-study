@@ -4,9 +4,9 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sTest/entity/user"
-	"sTest/pkg/response"
-	"sTest/service"
+	"study/entity/user"
+	"study/pkg/response"
+	"study/service"
 )
 
 // UpdateUserBaseMessage 当登陆成功，进入“我的家园”，提示玩家给自己设置昵称，并设置国家

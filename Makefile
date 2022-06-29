@@ -8,15 +8,15 @@ init:
 
 .PHONY: api
 api:
-	protoc --openapi_out=. --proto_path=. proto/sTest.proto
+	protoc --openapi_out=. --proto_path=. proto/study.proto
 
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/sTest.proto
+	protoc --proto_path=. --micro_out=. --go_out=:. proto/study.proto
 	
 .PHONY: build
 build:
-	go build -o sTest *.go
+	go build -o study *.go
 
 .PHONY: test
 test:
@@ -24,4 +24,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t sTest:latest
+	docker build . -t study:latest

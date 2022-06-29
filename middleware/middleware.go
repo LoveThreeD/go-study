@@ -2,21 +2,22 @@ package middleware
 
 import (
 	"fmt"
-	"sTest/pkg/response"
+	"net/http"
 	"strings"
+	"study/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )
 
 func NoMethodHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		response.ResFailedWithData(c, response.ErrNoMethodHandler)
+		response.ResFail(c, http.StatusNotFound, "")
 	}
 }
 
 func NoRouteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		response.ResFailedWithData(c, response.ErrNoRouteHandler)
+		response.ResFail(c, http.StatusNotFound, "")
 	}
 }
 

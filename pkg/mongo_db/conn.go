@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"sTest/pkg/response"
-	"sTest/pkg/viper"
+	"study/pkg/response"
+	"study/pkg/viper"
 )
 
 // ClientOpts mongoClient 连接客户端参数

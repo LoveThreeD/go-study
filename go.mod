@@ -1,4 +1,4 @@
-module sTest
+module study
 
 go 1.15
 

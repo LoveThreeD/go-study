@@ -2,8 +2,8 @@ package data
 
 import (
 	"errors"
-	"sTest/entity"
-	m "sTest/pkg/mysql"
+	"study/entity"
+	m "study/pkg/mysql"
 )
 
 /*

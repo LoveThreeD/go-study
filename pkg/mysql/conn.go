@@ -3,7 +3,7 @@ package mysql
 import (
 	"fmt"
 	"github.com/asim/go-micro/v3/logger"
-	"sTest/pkg/viper"
+	"study/pkg/viper"
 
 	// mysql必须导入
 	_ "github.com/go-sql-driver/mysql"

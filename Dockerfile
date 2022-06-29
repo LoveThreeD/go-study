@@ -1,3 +1,3 @@
 FROM alpine
-ADD sTest /sTest
-ENTRYPOINT [ "/sTest" ]
+ADD study /study
+ENTRYPOINT [ "/study" ]

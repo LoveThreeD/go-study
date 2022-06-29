@@ -6,11 +6,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"sTest/entity/dto"
-	"sTest/entity/friend_dto"
-	"sTest/pkg/mongo_db"
-	"sTest/pkg/response"
-	"sTest/repository/document/mongo_key"
+	"study/entity/dto"
+	"study/entity/friend_dto"
+	"study/pkg/mongo_db"
+	"study/pkg/response"
+	"study/repository/document/mongo_key"
 )
 
 // CreateUser create one user

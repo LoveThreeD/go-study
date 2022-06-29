@@ -4,9 +4,9 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sTest/pkg/response"
-	"sTest/service"
 	"strconv"
+	"study/pkg/response"
+	"study/service"
 )
 
 // XXX(待考虑) 返回数据中的排名是否可以不必返回,因为数组有序    (同样积分的会出现什么情况)

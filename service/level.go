@@ -4,12 +4,12 @@ import (
 	"errors"
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/golang/protobuf/proto"
-	"sTest/pkg/response"
-	"sTest/pkg/viper"
-	pb "sTest/proto"
-	"sTest/repository/data"
-	"sTest/repository/document"
 	"strconv"
+	"study/pkg/response"
+	"study/pkg/viper"
+	pb "study/proto"
+	"study/repository/data"
+	"study/repository/document"
 )
 
 var (

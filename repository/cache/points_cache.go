@@ -2,8 +2,8 @@ package cache
 
 import (
 	"github.com/garyburd/redigo/redis"
-	r "sTest/pkg/redis"
 	"strconv"
+	r "study/pkg/redis"
 	"time"
 )
 

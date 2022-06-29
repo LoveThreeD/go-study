@@ -3,8 +3,8 @@ package data
 import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/pkg/errors"
-	"sTest/entity/dto"
-	m "sTest/pkg/mysql"
+	"study/entity/dto"
+	m "study/pkg/mysql"
 )
 
 func GetNickNameAndAvatar(userId int) (c *dto.UserCache, err error) {

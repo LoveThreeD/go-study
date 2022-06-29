@@ -2,8 +2,9 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"sTest/pkg/auth"
-	"sTest/pkg/response"
+	"net/http"
+	"study/pkg/auth"
+	"study/pkg/response"
 )
 
 // UserAuthMiddleware Valid user token (jwt)
@@ -18,7 +19,7 @@ func UserAuthMiddleware(skippers ...SkipperFunc) gin.HandlerFunc {
 		// get token
 		token := c.GetHeader("Authorization")
 		if token == "" {
-			response.ResultFailed(c, response.ErrNoPermission)
+			response.ResFail(c, http.StatusNonAuthoritativeInfo, "")
 			c.Next()
 			return
 		}
@@ -26,7 +27,7 @@ func UserAuthMiddleware(skippers ...SkipperFunc) gin.HandlerFunc {
 		// parse token
 		claims, err := auth.ParseToken(token)
 		if err != nil {
-			response.ResultFailed(c, response.ErrNoPermission)
+			response.ResFail(c, http.StatusNonAuthoritativeInfo, "")
 			c.Next()
 			return
 		}

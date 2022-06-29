@@ -4,9 +4,9 @@ import (
 	"github.com/asim/go-micro/v3/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sTest/entity/friend_dto"
-	"sTest/pkg/response"
-	"sTest/service"
+	"study/entity/friend_dto"
+	"study/pkg/response"
+	"study/service"
 )
 
 func SearchFriend(c *gin.Context) {
