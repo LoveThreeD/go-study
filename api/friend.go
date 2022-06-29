@@ -11,7 +11,6 @@ import (
 
 func SearchFriend(c *gin.Context) {
 
-	// params bind 参数绑定
 	var params friend_dto.ReqFriendSearch
 	if err := c.ShouldBindQuery(&params); err != nil {
 		logger.Errorf("%+v", err)
@@ -29,8 +28,8 @@ func SearchFriend(c *gin.Context) {
 	response.ResSuccess(c, users)
 }
 
-// AddApplicationList 添加朋友，还需经过好友同意才会显示在好友列表
-func AddApplicationList(c *gin.Context) {
+// RequestFriend 添加朋友，还需经过好友同意才会显示在好友列表
+func RequestFriend(c *gin.Context) {
 
 	var params friend_dto.ReqFriendAdd
 	if err := c.Bind(&params); err != nil {
@@ -46,7 +45,7 @@ func AddApplicationList(c *gin.Context) {
 		return
 	}
 
-	if err := service.AddApplicationList(&params); err != nil {
+	if err := service.RequestFriend(&params); err != nil {
 		logger.Errorf("%+v", err)
 		response.ResFail(c, http.StatusFailedDependency, "")
 		return
@@ -54,8 +53,8 @@ func AddApplicationList(c *gin.Context) {
 	response.ResSuccess(c, "")
 }
 
-// Ack 同意/拒绝
-func Ack(c *gin.Context) {
+// ConfirmFriend 同意/拒绝
+func ConfirmFriend(c *gin.Context) {
 
 	var params friend_dto.ReqFriendAdd
 	if err := c.Bind(&params); err != nil {

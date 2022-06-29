@@ -34,9 +34,9 @@ func InitRouter(router *gin.Engine) {
 		// 搜索好友
 		friend.GET("search", api.SearchFriend)
 		// 申请好友
-		friend.POST("application", api.AddApplicationList)
+		friend.POST("application", api.RequestFriend)
 		// 确认好友
-		friend.POST("ack", api.Ack)
+		friend.POST("ack", api.ConfirmFriend)
 		// 删除好友
 		friend.DELETE("delete", api.DeleteFriend)
 		// 推荐好友

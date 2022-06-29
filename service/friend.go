@@ -16,8 +16,8 @@ func SearchUser(search *friend_dto.ReqFriendSearch) ([]*friend_dto.RespFriendRec
 	return users, nil
 }
 
-// AddApplicationList  添加到申请列表 And 添加到已申请列表
-func AddApplicationList(friend *friend_dto.ReqFriendAdd) error {
+//  RequestFriend  添加到申请列表  添加到已申请列表
+func RequestFriend(friend *friend_dto.ReqFriendAdd) error {
 
 	item := dto.Applied{
 		UserId: friend.FriendUserId,
