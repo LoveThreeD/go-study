@@ -1,4 +1,4 @@
-create table t_base_data
+create table base_data
 (
     offline_time bigint       null comment '离线时间',
     is_online    tinyint(1)   null comment '是否在线',
@@ -9,7 +9,7 @@ create table t_base_data
         primary key
 );
 
-create table t_account_data
+create table account_data
 (
     account      varchar(8)  not null,
     equipment_id varchar(36) not null comment '设备ID',
@@ -19,7 +19,7 @@ create table t_account_data
 );
 
 
-create table g_game_data
+create table game_data
 (
     game_data blob null,
     user_id   int  not null
