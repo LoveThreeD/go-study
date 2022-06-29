@@ -349,7 +349,7 @@ func AddApplied(userId int64, item *dto.Applied) (err error) {
 		mongo_key.BaseUserId: userId,
 	}
 	update := bson.M{
-		"$push": bson.M{
+		"$addToSet": bson.M{
 			mongo_key.BaseApplied: item,
 		},
 	}

@@ -147,3 +147,16 @@ func GetRecommendFriends(req *friend_dto.ReqRecommend) ([]*friend_dto.RespFriend
 
 	return users, nil
 }
+
+func ExistsInFriends(friend *friend_dto.ReqFriendAdd) error {
+	user, err := document.SelectUser(int(friend.SelfUserId))
+	if err != nil {
+		return err
+	}
+	for _, v := range user.Friends {
+		if v == friend.FriendUserId {
+			return nil
+		}
+	}
+	return errors.New("already exists in friends list")
+}

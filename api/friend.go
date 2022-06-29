@@ -57,6 +57,13 @@ func Ack(c *gin.Context) {
 		return
 	}
 
+	// 已经在好友列表中的话没必要走下去
+	if err := service.ExistsInFriends(&params); err != nil {
+		logger.Errorf("%+v", err)
+		response.ResFail(c, http.StatusFailedDependency, "")
+		return
+	}
+
 	// 拒绝
 	if params.Agree == 0 {
 		if err := service.NotPass(&params); err != nil {
